@@ -6,13 +6,13 @@ import { z } from "zod";
 export const articles = pgTable("articles", {
   id: varchar("id").primaryKey().default(sql`gen_random_uuid()`),
   title: text("title").notNull(),
-  excerpt: text("excerpt"),
-  content: text("content"),
+  excerpt: text("excerpt").notNull(),
+  content: text("content").notNull(),
   url: text("url").notNull().unique(),
   imageUrl: text("image_url"),
   category: text("category").notNull(),
-  tags: text("tags").array().default([]),
-  author: text("author"),
+  tags: text("tags").array().notNull().default([]),
+  author: text("author").notNull(),
   source: text("source").notNull(),
   sourceType: text("source_type").notNull(), // 'rss' | 'newsapi'
   publishedAt: timestamp("published_at").notNull(),

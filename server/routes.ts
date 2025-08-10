@@ -5,6 +5,7 @@ import { rssService } from "./services/rss-parser";
 import { newsApiService } from "./services/news-api";
 import { scheduler } from "./services/scheduler";
 import { searchParamsSchema, insertBookmarkSchema } from "@shared/schema";
+import { loadDummyData } from "./dummy-data";
 import { z } from "zod";
 
 export async function registerRoutes(app: Express): Promise<Server> {
@@ -166,7 +167,7 @@ export async function registerRoutes(app: Express): Promise<Server> {
   // Get trending tags
   app.get("/api/trending-tags", async (req, res) => {
     try {
-      const articles = await storage.getArticles({ limit: 100 });
+      const articles = await storage.getArticles({ limit: 100, offset: 0 });
       const tagCounts = new Map<string, number>();
       
       articles.forEach(article => {
@@ -184,6 +185,17 @@ export async function registerRoutes(app: Express): Promise<Server> {
     } catch (error) {
       console.error('Error fetching trending tags:', error);
       res.status(500).json({ message: "Failed to fetch trending tags" });
+    }
+  });
+
+  // Load dummy data endpoint
+  app.post("/api/load-dummy-data", async (req, res) => {
+    try {
+      await loadDummyData();
+      res.json({ message: "Dummy data loaded successfully" });
+    } catch (error) {
+      console.error('Error loading dummy data:', error);
+      res.status(500).json({ message: "Failed to load dummy data" });
     }
   });
 

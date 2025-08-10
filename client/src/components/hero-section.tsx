@@ -55,7 +55,7 @@ export default function HeroSection({ article }: HeroSectionProps) {
         await navigator.share({
           title: article.title,
           text: article.excerpt,
-          url: article.url,
+          url: article.url || window.location.href,
         });
       } catch (error) {
         console.log("Share cancelled");
@@ -225,7 +225,7 @@ export default function HeroSection({ article }: HeroSectionProps) {
                 Trending Topics
               </h3>
               <div className="flex flex-wrap gap-2">
-                {trendingTags.slice(0, 6).map((item: any) => (
+                {(trendingTags as any[]).slice(0, 6).map((item: any) => (
                   <Badge
                     key={item.tag}
                     variant="secondary"
@@ -237,7 +237,7 @@ export default function HeroSection({ article }: HeroSectionProps) {
                 ))}
                 
                 {/* Fallback trending tags if API doesn't return data */}
-                {trendingTags.length === 0 && (
+                {(trendingTags as any[]).length === 0 && (
                   <>
                     <Badge className="bg-pride-indigo/10 text-pride-indigo">#PrideMonth</Badge>
                     <Badge className="bg-pride-pink/10 text-pride-pink">#TransRights</Badge>

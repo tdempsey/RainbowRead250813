@@ -68,7 +68,7 @@ export class MemStorage implements IStorage {
   }
 
   private createSearchVector(article: Article): string {
-    return `${article.title} ${article.excerpt || ''} ${article.content || ''} ${article.tags.join(' ')} ${article.author || ''} ${article.category}`.toLowerCase();
+    return `${article.title} ${article.excerpt} ${article.content} ${article.tags.join(' ')} ${article.author} ${article.category}`.toLowerCase();
   }
 
   async getArticles(params?: SearchParams): Promise<Article[]> {

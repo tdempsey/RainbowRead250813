@@ -83,7 +83,7 @@ export default function Home() {
                 All Stories
               </Button>
               
-              {categories.map((category: any) => (
+              {(categories as any[]).map((category: any) => (
                 category.slug !== "all" && (
                   <Button
                     key={category.id}

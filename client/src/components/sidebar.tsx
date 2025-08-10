@@ -33,7 +33,7 @@ export default function Sidebar({ sessionId }: SidebarProps) {
     setEmail("");
   };
 
-  const activeSources = sources.filter((source: any) => source.isActive);
+  const activeSources = (sources as any[]).filter((source: any) => source.isActive);
 
   return (
     <div className="space-y-6">
@@ -70,7 +70,7 @@ export default function Sidebar({ sessionId }: SidebarProps) {
           Popular Tags
         </h3>
         <div className="flex flex-wrap gap-2">
-          {trendingTags.slice(0, 8).map((item: any) => (
+          {(trendingTags as any[]).slice(0, 8).map((item: any) => (
             <Button
               key={item.tag}
               variant="ghost"
@@ -83,7 +83,7 @@ export default function Sidebar({ sessionId }: SidebarProps) {
           ))}
           
           {/* Fallback tags if API doesn't return data */}
-          {trendingTags.length === 0 && (
+          {(trendingTags as any[]).length === 0 && (
             <>
               <Button variant="ghost" size="sm" className="bg-pride-indigo/10 text-pride-indigo px-3 py-1 rounded-full text-sm font-medium hover:bg-pride-indigo/20 transition-colors">
                 #TransRights

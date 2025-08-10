@@ -129,12 +129,12 @@ export default function Header({ onSearch, searchQuery, sessionId }: HeaderProps
               data-testid="button-bookmarks"
             >
               <Bookmark size={20} />
-              {bookmarks.length > 0 && (
+              {(bookmarks as any[]).length > 0 && (
                 <span 
                   className="absolute -top-1 -right-1 bg-pride-pink text-white text-xs rounded-full h-4 w-4 flex items-center justify-center"
                   data-testid="text-bookmark-count"
                 >
-                  {bookmarks.length}
+                  {(bookmarks as any[]).length}
                 </span>
               )}
             </Button>

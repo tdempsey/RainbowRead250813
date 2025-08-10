@@ -98,7 +98,7 @@ export default function ArticleCard({ article, sessionId }: ArticleCardProps) {
         await navigator.share({
           title: article.title,
           text: article.excerpt,
-          url: article.url,
+          url: article.url || window.location.href,
         });
       } catch (error) {
         console.log("Share cancelled");
