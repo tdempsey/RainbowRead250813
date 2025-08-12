@@ -42,7 +42,7 @@ export default function Header({ onSearch, searchQuery, sessionId }: HeaderProps
         <div className="flex justify-between items-center h-16">
           {/* Logo */}
           <div className="flex items-center space-x-4">
-            <div className="flex items-center space-x-2">
+            <Link href="/" className="flex items-center space-x-2 hover:opacity-80 transition-opacity cursor-pointer" data-testid="link-home-logo">
               <img 
                 src={rmLogo} 
                 alt="Rainbow Map News Logo" 
@@ -52,7 +52,7 @@ export default function Header({ onSearch, searchQuery, sessionId }: HeaderProps
               <span className="text-lg font-bold text-gray-900" data-testid="text-logo">
                 Rainbow Map News
               </span>
-            </div>
+            </Link>
           </div>
 
           {/* Desktop Navigation */}
