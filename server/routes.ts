@@ -9,6 +9,9 @@ import { loadDummyData } from "./dummy-data";
 import { z } from "zod";
 
 export async function registerRoutes(app: Express): Promise<Server> {
+  // Load dummy data automatically on startup
+  await loadDummyData();
+  
   // Start the content aggregation scheduler
   scheduler.start();
 
