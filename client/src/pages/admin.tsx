@@ -8,7 +8,7 @@ import { Badge } from "@/components/ui/badge";
 import { Label } from "@/components/ui/label";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 import { Switch } from "@/components/ui/switch";
-import { Trash2, Plus, RefreshCw, Settings, Rss, BarChart3, GripVertical, ArrowUp, ArrowDown, Star, TrendingUp } from "lucide-react";
+import { Trash2, Plus, RefreshCw, Settings, Rss, BarChart3, GripVertical, ArrowUp, ArrowDown, Star, TrendingUp, Edit, MoveUp, MoveDown, Target } from "lucide-react";
 import { queryClient } from "@/lib/queryClient";
 import { useToast } from "@/hooks/use-toast";
 import type { RssSource, Article } from "@shared/schema";
@@ -30,6 +30,10 @@ export default function AdminPanel() {
     isActive: true,
     sortOrder: 0
   });
+  
+  // Advanced story placement controls
+  const [editingRank, setEditingRank] = useState<{ articleId: string; currentRank: number } | null>(null);
+  const [customRankScore, setCustomRankScore] = useState<number>(100);
 
   // Queries
   const { data: sources = [] } = useQuery<RssSource[]>({
@@ -255,6 +259,45 @@ export default function AdminPanel() {
       toast({ title: "Error", description: "Failed to unpromote article", variant: "destructive" });
     },
   });
+
+  // Advanced ranking controls
+  const updateRankMutation = useMutation({
+    mutationFn: async ({ articleId, rankScore }: { articleId: string, rankScore: number }) => {
+      const response = await fetch(`/api/articles/${articleId}/promote`, {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ rankScore }),
+      });
+      if (!response.ok) throw new Error("Failed to update rank");
+      return response.json();
+    },
+    onSuccess: () => {
+      toast({ title: "Success", description: "Article rank updated successfully" });
+      queryClient.invalidateQueries({ queryKey: ["/api/articles"] });
+      setEditingRank(null);
+    },
+    onError: () => {
+      toast({ title: "Error", description: "Failed to update article rank", variant: "destructive" });
+    },
+  });
+
+  const handleRankEdit = (articleId: string, currentRank: number) => {
+    setEditingRank({ articleId, currentRank });
+    setCustomRankScore(currentRank);
+  };
+
+  const handleRankUpdate = () => {
+    if (editingRank) {
+      updateRankMutation.mutate({ 
+        articleId: editingRank.articleId, 
+        rankScore: customRankScore 
+      });
+    }
+  };
+
+  const quickRank = (articleId: string, score: number) => {
+    promoteArticleMutation.mutate({ articleId, rankScore: score });
+  };
 
   // Statistics
   const stats = {
@@ -551,29 +594,69 @@ export default function AdminPanel() {
                             </span>
                           </div>
                           
-                          <div className="flex items-center gap-2 mt-2">
-                            {article.isPromoted ? (
-                              <Button
-                                size="sm"
-                                variant="outline"
-                                onClick={() => unpromoteArticleMutation.mutate(article.id)}
-                                disabled={unpromoteArticleMutation.isPending}
-                                data-testid={`button-unpromote-${article.id}`}
-                              >
-                                <Star size={14} className="mr-1" />
-                                Unpromote
-                              </Button>
+                          <div className="flex items-center gap-2 mt-3 flex-wrap">
+                            {/* Quick Promotion Buttons */}
+                            {!article.isPromoted ? (
+                              <div className="flex items-center gap-1">
+                                <Button
+                                  size="sm"
+                                  variant="default"
+                                  onClick={() => quickRank(article.id, 500)}
+                                  disabled={promoteArticleMutation.isPending}
+                                  className="bg-red-600 hover:bg-red-700 text-xs px-2 py-1"
+                                  data-testid={`button-urgent-${article.id}`}
+                                >
+                                  <Target size={12} className="mr-1" />
+                                  Urgent
+                                </Button>
+                                <Button
+                                  size="sm"
+                                  variant="default"
+                                  onClick={() => quickRank(article.id, 300)}
+                                  disabled={promoteArticleMutation.isPending}
+                                  className="bg-orange-600 hover:bg-orange-700 text-xs px-2 py-1"
+                                  data-testid={`button-high-${article.id}`}
+                                >
+                                  <MoveUp size={12} className="mr-1" />
+                                  High
+                                </Button>
+                                <Button
+                                  size="sm"
+                                  variant="default"
+                                  onClick={() => quickRank(article.id, 100)}
+                                  disabled={promoteArticleMutation.isPending}
+                                  className="bg-blue-600 hover:bg-blue-700 text-xs px-2 py-1"
+                                  data-testid={`button-featured-${article.id}`}
+                                >
+                                  <Star size={12} className="mr-1" />
+                                  Featured
+                                </Button>
+                              </div>
                             ) : (
-                              <Button
-                                size="sm"
-                                variant="default"
-                                onClick={() => promoteArticleMutation.mutate({ articleId: article.id, rankScore: 100 })}
-                                disabled={promoteArticleMutation.isPending}
-                                data-testid={`button-promote-${article.id}`}
-                              >
-                                <TrendingUp size={14} className="mr-1" />
-                                Promote
-                              </Button>
+                              <div className="flex items-center gap-1">
+                                <Button
+                                  size="sm"
+                                  variant="outline"
+                                  onClick={() => handleRankEdit(article.id, article.rankScore)}
+                                  disabled={updateRankMutation.isPending}
+                                  className="text-xs px-2 py-1"
+                                  data-testid={`button-edit-rank-${article.id}`}
+                                >
+                                  <Edit size={12} className="mr-1" />
+                                  Edit Rank
+                                </Button>
+                                <Button
+                                  size="sm"
+                                  variant="outline"
+                                  onClick={() => unpromoteArticleMutation.mutate(article.id)}
+                                  disabled={unpromoteArticleMutation.isPending}
+                                  className="text-xs px-2 py-1"
+                                  data-testid={`button-unpromote-${article.id}`}
+                                >
+                                  <Star size={12} className="mr-1" />
+                                  Unpromote
+                                </Button>
+                              </div>
                             )}
                           </div>
                         </div>
@@ -587,6 +670,57 @@ export default function AdminPanel() {
                 </div>
               </CardContent>
             </Card>
+            
+            {/* Custom Rank Editor Modal */}
+            {editingRank && (
+              <Card className="fixed inset-0 z-50 flex items-center justify-center bg-black bg-opacity-50">
+                <div className="bg-white p-6 rounded-lg shadow-lg max-w-md w-full mx-4">
+                  <CardHeader className="pb-4">
+                    <CardTitle>Edit Article Rank</CardTitle>
+                    <CardDescription>
+                      Set a custom rank score for precise story placement
+                    </CardDescription>
+                  </CardHeader>
+                  <CardContent className="space-y-4">
+                    <div className="space-y-2">
+                      <Label htmlFor="rank-score">Rank Score</Label>
+                      <Input
+                        id="rank-score"
+                        type="number"
+                        value={customRankScore}
+                        onChange={(e) => setCustomRankScore(Number(e.target.value))}
+                        min="1"
+                        max="1000"
+                        className="w-full"
+                        data-testid="input-custom-rank"
+                      />
+                      <div className="text-xs text-gray-500 space-y-1">
+                        <div><strong>500+:</strong> Breaking News / Urgent</div>
+                        <div><strong>300-499:</strong> High Priority</div>
+                        <div><strong>100-299:</strong> Featured Stories</div>
+                        <div><strong>1-99:</strong> Standard Promoted</div>
+                      </div>
+                    </div>
+                    <div className="flex justify-end gap-2">
+                      <Button
+                        variant="outline"
+                        onClick={() => setEditingRank(null)}
+                        data-testid="button-cancel-rank"
+                      >
+                        Cancel
+                      </Button>
+                      <Button
+                        onClick={handleRankUpdate}
+                        disabled={updateRankMutation.isPending}
+                        data-testid="button-update-rank"
+                      >
+                        {updateRankMutation.isPending ? "Updating..." : "Update Rank"}
+                      </Button>
+                    </div>
+                  </CardContent>
+                </div>
+              </Card>
+            )}
           </TabsContent>
 
           {/* Categories Tab */}
