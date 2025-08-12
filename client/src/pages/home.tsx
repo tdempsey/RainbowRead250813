@@ -60,6 +60,8 @@ export default function Home() {
         onSearch={handleSearch} 
         searchQuery={searchQuery}
         sessionId={sessionId}
+        onCategoryChange={handleCategoryChange}
+        selectedCategory={selectedCategory}
       />
       
       {featuredArticle && (

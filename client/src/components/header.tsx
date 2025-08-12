@@ -1,21 +1,29 @@
-import { useState } from "react";
+import { useState, useEffect, useRef } from "react";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
-import { Search, Bookmark, Menu, Newspaper } from "lucide-react";
+import { Search, Bookmark, Menu, Newspaper, ChevronDown } from "lucide-react";
 import { useQuery } from "@tanstack/react-query";
 
 interface HeaderProps {
   onSearch: (query: string) => void;
   searchQuery: string;
   sessionId: string;
+  onCategoryChange?: (category: string) => void;
+  selectedCategory?: string;
 }
 
-export default function Header({ onSearch, searchQuery, sessionId }: HeaderProps) {
+export default function Header({ onSearch, searchQuery, sessionId, onCategoryChange, selectedCategory = "all" }: HeaderProps) {
   const [searchInput, setSearchInput] = useState(searchQuery);
   const [showMobileSearch, setShowMobileSearch] = useState(false);
+  const [showCategoryDropdown, setShowCategoryDropdown] = useState(false);
+  const dropdownRef = useRef<HTMLDivElement>(null);
 
   const { data: bookmarks = [] } = useQuery({
     queryKey: ["/api/bookmarks", { sessionId }],
+  });
+
+  const { data: categories = [] } = useQuery({
+    queryKey: ["/api/categories"],
   });
 
   const handleSearch = (e: React.FormEvent) => {
@@ -29,6 +37,20 @@ export default function Header({ onSearch, searchQuery, sessionId }: HeaderProps
       onSearch("");
     }
   };
+
+  // Close dropdown when clicking outside
+  useEffect(() => {
+    const handleClickOutside = (event: MouseEvent) => {
+      if (dropdownRef.current && !dropdownRef.current.contains(event.target as Node)) {
+        setShowCategoryDropdown(false);
+      }
+    };
+
+    if (showCategoryDropdown) {
+      document.addEventListener('mousedown', handleClickOutside);
+      return () => document.removeEventListener('mousedown', handleClickOutside);
+    }
+  }, [showCategoryDropdown]);
 
   return (
     <header className="bg-white shadow-sm sticky top-0 z-50 border-b border-gray-100">
@@ -48,41 +70,53 @@ export default function Header({ onSearch, searchQuery, sessionId }: HeaderProps
 
           {/* Desktop Navigation */}
           <nav className="hidden md:flex items-center space-x-8">
-            <a 
-              href="#" 
-              className="text-gray-900 font-medium border-b-2 border-pride-indigo pb-4"
-              data-testid="link-nav-latest"
-            >
-              Latest
-            </a>
-            <a 
-              href="#" 
-              className="text-gray-600 hover:text-gray-900 font-medium pb-4 hover:border-b-2 hover:border-gray-300 transition-colors"
-              data-testid="link-nav-politics"
-            >
-              Politics
-            </a>
-            <a 
-              href="#" 
-              className="text-gray-600 hover:text-gray-900 font-medium pb-4 hover:border-b-2 hover:border-gray-300 transition-colors"
-              data-testid="link-nav-culture"
-            >
-              Culture
-            </a>
-            <a 
-              href="#" 
-              className="text-gray-600 hover:text-gray-900 font-medium pb-4 hover:border-b-2 hover:border-gray-300 transition-colors"
-              data-testid="link-nav-health"
-            >
-              Health
-            </a>
-            <a 
-              href="#" 
-              className="text-gray-600 hover:text-gray-900 font-medium pb-4 hover:border-b-2 hover:border-gray-300 transition-colors"
-              data-testid="link-nav-community"
-            >
-              Community
-            </a>
+            {/* Categories Dropdown */}
+            <div className="relative" ref={dropdownRef}>
+              <Button
+                variant="ghost"
+                className={`flex items-center space-x-1 font-medium transition-colors ${
+                  showCategoryDropdown 
+                    ? 'text-pride-indigo' 
+                    : 'text-gray-700 hover:text-gray-900'
+                }`}
+                onClick={() => setShowCategoryDropdown(!showCategoryDropdown)}
+                data-testid="button-categories-dropdown"
+              >
+                <span>Categories</span>
+                <ChevronDown 
+                  size={16} 
+                  className={`transform transition-transform ${
+                    showCategoryDropdown ? 'rotate-180' : ''
+                  }`} 
+                />
+              </Button>
+              
+              {showCategoryDropdown && (
+                <div className="absolute top-full left-0 mt-1 bg-white border border-gray-200 rounded-lg shadow-lg min-w-[200px] z-50">
+                  <div className="py-2">
+                    {(categories as any[]).map((category: any) => (
+                      <button
+                        key={category.id}
+                        onClick={() => {
+                          if (onCategoryChange) {
+                            onCategoryChange(category.slug);
+                          }
+                          setShowCategoryDropdown(false);
+                        }}
+                        className={`w-full text-left px-4 py-2 text-sm transition-colors ${
+                          selectedCategory === category.slug
+                            ? 'bg-pride-indigo text-white'
+                            : 'text-gray-700 hover:bg-gray-100'
+                        }`}
+                        data-testid={`button-category-${category.slug}`}
+                      >
+                        {category.name}
+                      </button>
+                    ))}
+                  </div>
+                </div>
+              )}
+            </div>
           </nav>
 
           {/* Search and User Menu */}
