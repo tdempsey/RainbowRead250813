@@ -23,6 +23,7 @@ export default function Home() {
     category: selectedCategory !== "all" ? selectedCategory : undefined,
     limit: pageSize,
     offset: currentPage * pageSize,
+    // Don't filter by lgbtqFocused by default, show all articles
   };
 
   const { data: articles = [], isLoading, refetch } = useQuery<Article[]>({

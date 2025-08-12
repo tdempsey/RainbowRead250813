@@ -20,7 +20,7 @@ export async function registerRoutes(app: Express): Promise<Server> {
         category: req.query.category,
         tags: req.query.tags ? JSON.parse(req.query.tags as string) : undefined,
         source: req.query.source,
-        lgbtqFocused: req.query.lgbtqFocused === 'true',
+        lgbtqFocused: req.query.lgbtqFocused ? req.query.lgbtqFocused === 'true' : undefined,
         limit: req.query.limit ? parseInt(req.query.limit as string) : 20,
         offset: req.query.offset ? parseInt(req.query.offset as string) : 0,
       });

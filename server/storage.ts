@@ -72,6 +72,7 @@ export class MemStorage implements IStorage {
   }
 
   async getArticles(params?: SearchParams): Promise<Article[]> {
+    console.log(`Getting articles: total in storage = ${this.articles.size}, params =`, params);
     let articles = Array.from(this.articles.values());
 
     if (params) {

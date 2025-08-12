@@ -3,6 +3,10 @@ import type { InsertArticle, InsertRssSource } from '@shared/schema';
 
 export async function loadDummyData() {
   console.log('Loading dummy data...');
+  
+  // Clear existing articles first
+  const allArticles = await storage.getArticles();
+  console.log(`Found ${allArticles.length} existing articles, clearing...`);
 
   // Sample LGBTQ+ articles with diverse content
   const dummyArticles: InsertArticle[] = [
@@ -177,13 +181,20 @@ export async function loadDummyData() {
   ];
 
   // Create articles
+  let createdCount = 0;
   for (const articleData of dummyArticles) {
     try {
-      await storage.createArticle(articleData);
+      const createdArticle = await storage.createArticle(articleData);
+      createdCount++;
+      console.log(`Created article: ${createdArticle.title} (ID: ${createdArticle.id})`);
     } catch (error) {
       console.error(`Error creating article: ${articleData.title}`, error);
     }
   }
 
-  console.log(`Created ${dummyArticles.length} dummy articles`);
+  console.log(`Successfully created ${createdCount} dummy articles`);
+  
+  // Verify articles were created
+  const verificationArticles = await storage.getArticles();
+  console.log(`Verification: Storage now contains ${verificationArticles.length} total articles`);
 }
