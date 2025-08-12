@@ -43,12 +43,12 @@ export class MemStorage implements IStorage {
   private initializeDefaultData() {
     // Initialize default categories
     const defaultCategories = [
-      { name: "All Stories", slug: "all", description: "All news stories", isActive: true },
-      { name: "Politics", slug: "politics", description: "Political news and updates", isActive: true },
-      { name: "Culture & Arts", slug: "culture", description: "Cultural events and artistic expression", isActive: true },
-      { name: "Health & Wellness", slug: "health", description: "Health and wellness information", isActive: true },
-      { name: "Business", slug: "business", description: "Business and economic news", isActive: true },
-      { name: "Community", slug: "community", description: "Community events and stories", isActive: true },
+      { name: "All Stories", slug: "all", description: "All news stories", isActive: true, sortOrder: 0 },
+      { name: "Politics", slug: "politics", description: "Political news and updates", isActive: true, sortOrder: 1 },
+      { name: "Culture & Arts", slug: "culture", description: "Cultural events and artistic expression", isActive: true, sortOrder: 2 },
+      { name: "Health & Wellness", slug: "health", description: "Health and wellness information", isActive: true, sortOrder: 3 },
+      { name: "Business", slug: "business", description: "Business and economic news", isActive: true, sortOrder: 4 },
+      { name: "Community", slug: "community", description: "Community events and stories", isActive: true, sortOrder: 5 },
     ];
 
     defaultCategories.forEach(cat => {
@@ -234,15 +234,18 @@ export class MemStorage implements IStorage {
   }
 
   async getCategories(): Promise<Category[]> {
-    return Array.from(this.categories.values());
+    return Array.from(this.categories.values()).sort((a, b) => a.sortOrder - b.sortOrder);
   }
 
   async createCategory(categoryData: InsertCategory): Promise<Category> {
     const id = randomUUID();
+    // Set sortOrder to highest + 1 if not provided
+    const maxSortOrder = Math.max(...Array.from(this.categories.values()).map(c => c.sortOrder));
     const category: Category = {
       ...categoryData,
       isActive: categoryData.isActive ?? true,
       description: categoryData.description ?? null,
+      sortOrder: categoryData.sortOrder ?? (maxSortOrder + 1),
       id,
     };
     this.categories.set(id, category);

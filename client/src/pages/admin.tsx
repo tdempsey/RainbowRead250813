@@ -8,7 +8,7 @@ import { Badge } from "@/components/ui/badge";
 import { Label } from "@/components/ui/label";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 import { Switch } from "@/components/ui/switch";
-import { Trash2, Plus, RefreshCw, Settings, Rss, BarChart3 } from "lucide-react";
+import { Trash2, Plus, RefreshCw, Settings, Rss, BarChart3, GripVertical, ArrowUp, ArrowDown } from "lucide-react";
 import { queryClient } from "@/lib/queryClient";
 import { useToast } from "@/hooks/use-toast";
 import type { RssSource, Article } from "@shared/schema";
@@ -27,7 +27,8 @@ export default function AdminPanel() {
     name: "",
     slug: "",
     description: "",
-    isActive: true
+    isActive: true,
+    sortOrder: 0
   });
 
   // Queries
@@ -39,7 +40,7 @@ export default function AdminPanel() {
     queryKey: ["/api/articles", { limit: 100 }],
   });
 
-  const { data: categories = [] } = useQuery<{name: string, slug: string, description: string | null, isActive: boolean, id: string}[]>({
+  const { data: categories = [] } = useQuery<{name: string, slug: string, description: string | null, isActive: boolean, id: string, sortOrder: number}[]>({
     queryKey: ["/api/categories"],
   });
 
@@ -110,7 +111,7 @@ export default function AdminPanel() {
     onSuccess: () => {
       toast({ title: "Success", description: "Category added successfully" });
       queryClient.invalidateQueries({ queryKey: ["/api/categories"] });
-      setNewCategory({ name: "", slug: "", description: "", isActive: true });
+      setNewCategory({ name: "", slug: "", description: "", isActive: true, sortOrder: 0 });
     },
     onError: () => {
       toast({ title: "Error", description: "Failed to add category", variant: "destructive" });
@@ -168,6 +169,54 @@ export default function AdminPanel() {
   const handleCategoryNameChange = (name: string) => {
     const slug = name.toLowerCase().replace(/[^a-z0-9]+/g, '-').replace(/(^-|-$)/g, '');
     setNewCategory({ ...newCategory, name, slug });
+  };
+
+  // Category reordering
+  const reorderCategoryMutation = useMutation({
+    mutationFn: async ({ categoryId, newSortOrder }: { categoryId: string, newSortOrder: number }) => {
+      const response = await fetch(`/api/categories/${categoryId}`, {
+        method: "PATCH",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ sortOrder: newSortOrder }),
+      });
+      if (!response.ok) throw new Error("Failed to reorder category");
+      return response.json();
+    },
+    onSuccess: () => {
+      queryClient.invalidateQueries({ queryKey: ["/api/categories"] });
+    },
+    onError: () => {
+      toast({ title: "Error", description: "Failed to reorder category", variant: "destructive" });
+    },
+  });
+
+  const handleMoveCategory = (categoryId: string, direction: 'up' | 'down') => {
+    const sortedCategories = [...categories].sort((a, b) => a.sortOrder - b.sortOrder);
+    const currentIndex = sortedCategories.findIndex(c => c.id === categoryId);
+    
+    if (currentIndex === -1) return;
+    
+    if (direction === 'up' && currentIndex > 0) {
+      const targetCategory = sortedCategories[currentIndex - 1];
+      reorderCategoryMutation.mutate({ 
+        categoryId: categoryId, 
+        newSortOrder: targetCategory.sortOrder 
+      });
+      reorderCategoryMutation.mutate({ 
+        categoryId: targetCategory.id, 
+        newSortOrder: sortedCategories[currentIndex].sortOrder 
+      });
+    } else if (direction === 'down' && currentIndex < sortedCategories.length - 1) {
+      const targetCategory = sortedCategories[currentIndex + 1];
+      reorderCategoryMutation.mutate({ 
+        categoryId: categoryId, 
+        newSortOrder: targetCategory.sortOrder 
+      });
+      reorderCategoryMutation.mutate({ 
+        categoryId: targetCategory.id, 
+        newSortOrder: sortedCategories[currentIndex].sortOrder 
+      });
+    }
   };
 
   // Statistics
@@ -514,6 +563,18 @@ export default function AdminPanel() {
                       />
                     </div>
 
+                    <div className="space-y-2">
+                      <Label htmlFor="category-sort-order">Sort Order</Label>
+                      <Input
+                        id="category-sort-order"
+                        type="number"
+                        placeholder="0"
+                        value={newCategory.sortOrder}
+                        onChange={(e) => setNewCategory({ ...newCategory, sortOrder: parseInt(e.target.value) || 0 })}
+                        data-testid="input-category-sort-order"
+                      />
+                    </div>
+
                     <div className="flex items-center space-x-2">
                       <Switch
                         id="category-active"
@@ -546,20 +607,47 @@ export default function AdminPanel() {
               </CardHeader>
               <CardContent>
                 <div className="space-y-4">
-                  {categories.map((category) => (
-                    <div key={category.name} className="flex items-center justify-between p-4 border rounded-lg">
-                      <div className="flex-1">
-                        <div className="flex items-center gap-2 mb-2">
-                          <h3 className="font-semibold">{category.name}</h3>
-                          {!category.isActive && (
-                            <Badge variant="destructive">Inactive</Badge>
+                  {[...categories].sort((a, b) => a.sortOrder - b.sortOrder).map((category, index) => (
+                    <div key={category.name} className="flex items-center justify-between p-4 border rounded-lg bg-white">
+                      <div className="flex items-center gap-3">
+                        <div className="flex flex-col">
+                          <Button
+                            size="sm"
+                            variant="ghost"
+                            onClick={() => handleMoveCategory(category.id, 'up')}
+                            disabled={index === 0 || reorderCategoryMutation.isPending}
+                            className="h-6 w-6 p-0 hover:bg-gray-100"
+                            data-testid={`button-move-up-${category.slug}`}
+                          >
+                            <ArrowUp size={12} />
+                          </Button>
+                          <Button
+                            size="sm"
+                            variant="ghost"
+                            onClick={() => handleMoveCategory(category.id, 'down')}
+                            disabled={index === categories.length - 1 || reorderCategoryMutation.isPending}
+                            className="h-6 w-6 p-0 hover:bg-gray-100"
+                            data-testid={`button-move-down-${category.slug}`}
+                          >
+                            <ArrowDown size={12} />
+                          </Button>
+                        </div>
+                        
+                        <div className="flex-1">
+                          <div className="flex items-center gap-2 mb-2">
+                            <span className="text-xs text-gray-400 font-mono w-6">#{category.sortOrder}</span>
+                            <h3 className="font-semibold">{category.name}</h3>
+                            {!category.isActive && (
+                              <Badge variant="destructive">Inactive</Badge>
+                            )}
+                          </div>
+                          <p className="text-sm text-gray-600 mb-1">Slug: {category.slug}</p>
+                          {category.description && (
+                            <p className="text-xs text-gray-500">{category.description}</p>
                           )}
                         </div>
-                        <p className="text-sm text-gray-600 mb-1">Slug: {category.slug}</p>
-                        {category.description && (
-                          <p className="text-xs text-gray-500">{category.description}</p>
-                        )}
                       </div>
+                      
                       <div className="flex items-center gap-2">
                         <Switch
                           checked={category.isActive}

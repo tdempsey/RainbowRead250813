@@ -260,6 +260,19 @@ export async function registerRoutes(app: Express): Promise<Server> {
     }
   });
 
+  app.post("/api/categories/reorder", async (req, res) => {
+    try {
+      const { categoryOrders } = req.body; // Array of {id, sortOrder}
+      for (const { id, sortOrder } of categoryOrders) {
+        await storage.updateCategory(id, { sortOrder });
+      }
+      res.json({ message: "Categories reordered successfully" });
+    } catch (error) {
+      console.error('Error reordering categories:', error);
+      res.status(500).json({ message: "Failed to reorder categories" });
+    }
+  });
+
   app.delete("/api/categories/:id", async (req, res) => {
     try {
       const deleted = await storage.deleteCategory(req.params.id);
