@@ -60,53 +60,39 @@ export default function Home() {
         onSearch={handleSearch} 
         searchQuery={searchQuery}
         sessionId={sessionId}
-        onCategoryChange={handleCategoryChange}
-        selectedCategory={selectedCategory}
       />
       
-      {featuredArticle && (
-        <HeroSection article={featuredArticle} />
-      )}
-
-      {/* Category Tabs */}
-      <section className="bg-white border-b border-gray-100">
+      {/* Category Navigation */}
+      <section className="bg-white border-b border-gray-100 sticky top-16 z-40">
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
           <div className="flex items-center justify-between py-4">
             <div className="flex items-center space-x-1 overflow-x-auto pb-2">
-              <Button
-                variant={selectedCategory === "all" ? "default" : "ghost"}
-                className={`px-4 py-2 rounded-lg font-medium whitespace-nowrap transition-colors ${
-                  selectedCategory === "all" 
-                    ? "bg-pride-indigo text-white hover:bg-indigo-700" 
-                    : "text-gray-600 hover:bg-gray-100"
-                }`}
-                onClick={() => handleCategoryChange("all")}
-                data-testid="button-category-all"
-              >
-                All Stories
-              </Button>
-              
               {(categories as any[]).map((category: any) => (
-                category.slug !== "all" && (
-                  <Button
-                    key={category.id}
-                    variant={selectedCategory === category.slug ? "default" : "ghost"}
-                    className={`px-4 py-2 rounded-lg font-medium whitespace-nowrap transition-colors ${
-                      selectedCategory === category.slug 
-                        ? "bg-pride-indigo text-white hover:bg-indigo-700" 
-                        : "text-gray-600 hover:bg-gray-100"
-                    }`}
-                    onClick={() => handleCategoryChange(category.slug)}
-                    data-testid={`button-category-${category.slug}`}
-                  >
-                    {category.name}
-                  </Button>
-                )
+                <Button
+                  key={category.id}
+                  variant={selectedCategory === category.slug ? "default" : "ghost"}
+                  size="sm"
+                  onClick={() => handleCategoryChange(category.slug)}
+                  className={`whitespace-nowrap ${
+                    selectedCategory === category.slug
+                      ? "bg-pride-indigo text-white hover:bg-pride-indigo/90"
+                      : "text-gray-600 hover:text-gray-900"
+                  }`}
+                  data-testid={`button-category-${category.slug}`}
+                >
+                  {category.name}
+                </Button>
               ))}
             </div>
           </div>
         </div>
       </section>
+      
+      {featuredArticle && (
+        <HeroSection article={featuredArticle} />
+      )}
+
+
 
       {/* Main Content */}
       <main className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
