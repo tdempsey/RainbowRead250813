@@ -1,6 +1,6 @@
 # Overview
 
-This is a full-stack LGBTQ+ news aggregation platform built with React, Express, and TypeScript. The application aggregates news content from multiple sources including RSS feeds and NewsAPI, providing a centralized hub for LGBTQ+ focused news stories. Users can search, filter, bookmark articles, and browse content by categories. The platform emphasizes community-focused content curation with features for liking articles and newsletter subscriptions.
+Rainbow Map News is a full-stack LGBTQ+ news aggregation platform built with React, Express, and TypeScript. The application aggregates news content from multiple sources including RSS feeds and NewsAPI, providing a centralized hub for LGBTQ+ focused news stories. Users can search, filter, bookmark articles, and browse content by categories. The platform emphasizes community-focused content curation with features for liking articles and newsletter subscriptions.
 
 # User Preferences
 

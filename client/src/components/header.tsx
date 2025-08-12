@@ -41,7 +41,7 @@ export default function Header({ onSearch, searchQuery, sessionId }: HeaderProps
                 <Newspaper className="text-white text-sm" size={16} />
               </div>
               <span className="text-xl font-bold text-gray-900" data-testid="text-logo">
-                Pride News
+                Rainbow Map News
               </span>
             </div>
           </div>
