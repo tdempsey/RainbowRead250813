@@ -19,6 +19,9 @@ export const articles = pgTable("articles", {
   createdAt: timestamp("created_at").notNull().default(sql`now()`),
   likes: integer("likes").notNull().default(0),
   isLgbtqFocused: boolean("is_lgbtq_focused").notNull().default(false),
+  isPromoted: boolean("is_promoted").notNull().default(false),
+  rankScore: integer("rank_score").notNull().default(0),
+  promotedAt: timestamp("promoted_at"),
   searchVector: text("search_vector"), // For full-text search indexing
 });
 
@@ -53,6 +56,9 @@ export const insertArticleSchema = createInsertSchema(articles).omit({
   id: true,
   createdAt: true,
   likes: true,
+  isPromoted: true,
+  rankScore: true,
+  promotedAt: true,
   searchVector: true,
 });
 

@@ -8,7 +8,7 @@ import { Badge } from "@/components/ui/badge";
 import { Label } from "@/components/ui/label";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 import { Switch } from "@/components/ui/switch";
-import { Trash2, Plus, RefreshCw, Settings, Rss, BarChart3, GripVertical, ArrowUp, ArrowDown } from "lucide-react";
+import { Trash2, Plus, RefreshCw, Settings, Rss, BarChart3, GripVertical, ArrowUp, ArrowDown, Star, TrendingUp } from "lucide-react";
 import { queryClient } from "@/lib/queryClient";
 import { useToast } from "@/hooks/use-toast";
 import type { RssSource, Article } from "@shared/schema";
@@ -218,6 +218,43 @@ export default function AdminPanel() {
       });
     }
   };
+
+  // Article promotion mutations
+  const promoteArticleMutation = useMutation({
+    mutationFn: async ({ articleId, rankScore }: { articleId: string, rankScore: number }) => {
+      const response = await fetch(`/api/articles/${articleId}/promote`, {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ rankScore }),
+      });
+      if (!response.ok) throw new Error("Failed to promote article");
+      return response.json();
+    },
+    onSuccess: () => {
+      toast({ title: "Success", description: "Article promoted successfully" });
+      queryClient.invalidateQueries({ queryKey: ["/api/articles"] });
+    },
+    onError: () => {
+      toast({ title: "Error", description: "Failed to promote article", variant: "destructive" });
+    },
+  });
+
+  const unpromoteArticleMutation = useMutation({
+    mutationFn: async (articleId: string) => {
+      const response = await fetch(`/api/articles/${articleId}/promote`, {
+        method: "DELETE",
+      });
+      if (!response.ok) throw new Error("Failed to unpromote article");
+      return response.json();
+    },
+    onSuccess: () => {
+      toast({ title: "Success", description: "Article unpromoted successfully" });
+      queryClient.invalidateQueries({ queryKey: ["/api/articles"] });
+    },
+    onError: () => {
+      toast({ title: "Error", description: "Failed to unpromote article", variant: "destructive" });
+    },
+  });
 
   // Statistics
   const stats = {
@@ -489,23 +526,61 @@ export default function AdminPanel() {
               <CardContent>
                 <div className="space-y-4">
                   {articles.slice(0, 10).map((article) => (
-                    <div key={article.id} className="flex items-start justify-between p-4 border rounded-lg">
-                      <div className="flex-1">
-                        <h3 className="font-semibold text-sm mb-1">{article.title}</h3>
-                        <p className="text-xs text-gray-600 mb-2">{article.excerpt}</p>
-                        <div className="flex items-center gap-2 text-xs">
-                          <Badge variant="outline">{article.category}</Badge>
-                          <span className="text-gray-500">{article.source}</span>
-                          {article.isLgbtqFocused && (
-                            <Badge variant="secondary">LGBTQ+</Badge>
-                          )}
-                          <span className="text-gray-500">
-                            {article.likes || 0} likes
-                          </span>
+                    <div key={article.id} className="p-4 border rounded-lg bg-white relative">
+                      {article.isPromoted && (
+                        <div className="absolute top-2 right-2">
+                          <Badge variant="default" className="text-xs bg-yellow-500 text-black">
+                            <Star size={12} className="mr-1" />
+                            Promoted #{article.rankScore}
+                          </Badge>
                         </div>
-                      </div>
-                      <div className="text-xs text-gray-500">
-                        {new Date(article.publishedAt).toLocaleDateString()}
+                      )}
+                      
+                      <div className="flex items-start justify-between mb-2 pr-20">
+                        <div className="flex-1">
+                          <h3 className="font-semibold text-sm mb-1">{article.title}</h3>
+                          <p className="text-xs text-gray-600 mb-2">{article.excerpt}</p>
+                          <div className="flex items-center gap-2 text-xs mb-2">
+                            <Badge variant="outline">{article.category}</Badge>
+                            <span className="text-gray-500">{article.source}</span>
+                            {article.isLgbtqFocused && (
+                              <Badge variant="secondary">LGBTQ+</Badge>
+                            )}
+                            <span className="text-gray-500">
+                              {article.likes || 0} likes
+                            </span>
+                          </div>
+                          
+                          <div className="flex items-center gap-2 mt-2">
+                            {article.isPromoted ? (
+                              <Button
+                                size="sm"
+                                variant="outline"
+                                onClick={() => unpromoteArticleMutation.mutate(article.id)}
+                                disabled={unpromoteArticleMutation.isPending}
+                                data-testid={`button-unpromote-${article.id}`}
+                              >
+                                <Star size={14} className="mr-1" />
+                                Unpromote
+                              </Button>
+                            ) : (
+                              <Button
+                                size="sm"
+                                variant="default"
+                                onClick={() => promoteArticleMutation.mutate({ articleId: article.id, rankScore: 100 })}
+                                disabled={promoteArticleMutation.isPending}
+                                data-testid={`button-promote-${article.id}`}
+                              >
+                                <TrendingUp size={14} className="mr-1" />
+                                Promote
+                              </Button>
+                            )}
+                          </div>
+                        </div>
+                        
+                        <div className="text-xs text-gray-500 flex-shrink-0">
+                          {new Date(article.publishedAt).toLocaleDateString()}
+                        </div>
                       </div>
                     </div>
                   ))}

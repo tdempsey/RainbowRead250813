@@ -299,6 +299,34 @@ export async function registerRoutes(app: Express): Promise<Server> {
     }
   });
 
+  // Article promotion endpoints
+  app.post("/api/articles/:id/promote", async (req, res) => {
+    try {
+      const { rankScore } = req.body;
+      const article = await storage.promoteArticle(req.params.id, rankScore);
+      if (!article) {
+        return res.status(404).json({ message: "Article not found" });
+      }
+      res.json(article);
+    } catch (error) {
+      console.error('Error promoting article:', error);
+      res.status(500).json({ message: "Failed to promote article" });
+    }
+  });
+
+  app.delete("/api/articles/:id/promote", async (req, res) => {
+    try {
+      const article = await storage.unpromoteArticle(req.params.id);
+      if (!article) {
+        return res.status(404).json({ message: "Article not found" });
+      }
+      res.json(article);
+    } catch (error) {
+      console.error('Error unpromoting article:', error);
+      res.status(500).json({ message: "Failed to unpromote article" });
+    }
+  });
+
   const httpServer = createServer(app);
   return httpServer;
 }

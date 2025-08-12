@@ -10,6 +10,8 @@ export interface IStorage {
   deleteArticle(id: string): Promise<boolean>;
   searchArticles(query: string, params?: SearchParams): Promise<Article[]>;
   likeArticle(id: string): Promise<Article | undefined>;
+  promoteArticle(id: string, rankScore?: number): Promise<Article | undefined>;
+  unpromoteArticle(id: string): Promise<Article | undefined>;
   
   // RSS Sources
   getRssSources(): Promise<RssSource[]>;
@@ -93,8 +95,20 @@ export class MemStorage implements IStorage {
       }
     }
 
-    // Sort by publishedAt desc
-    articles.sort((a, b) => new Date(b.publishedAt).getTime() - new Date(a.publishedAt).getTime());
+    // Sort by promotion status and rank score first, then by publishedAt
+    articles.sort((a, b) => {
+      // Promoted articles first
+      if (a.isPromoted && !b.isPromoted) return -1;
+      if (!a.isPromoted && b.isPromoted) return 1;
+      
+      // If both promoted, sort by rank score (higher first)
+      if (a.isPromoted && b.isPromoted) {
+        if (a.rankScore !== b.rankScore) return b.rankScore - a.rankScore;
+      }
+      
+      // Then by publishedAt (newest first)
+      return new Date(b.publishedAt).getTime() - new Date(a.publishedAt).getTime();
+    });
 
     const offset = params?.offset || 0;
     const limit = params?.limit || 20;
@@ -113,6 +127,9 @@ export class MemStorage implements IStorage {
       id,
       createdAt: new Date(),
       likes: 0,
+      isPromoted: false,
+      rankScore: 0,
+      promotedAt: null,
       searchVector: '',
     };
     
@@ -158,7 +175,20 @@ export class MemStorage implements IStorage {
       }
     }
 
-    articles.sort((a, b) => new Date(b.publishedAt).getTime() - new Date(a.publishedAt).getTime());
+    // Sort by promotion status and rank score first, then by publishedAt
+    articles.sort((a, b) => {
+      // Promoted articles first
+      if (a.isPromoted && !b.isPromoted) return -1;
+      if (!a.isPromoted && b.isPromoted) return 1;
+      
+      // If both promoted, sort by rank score (higher first)
+      if (a.isPromoted && b.isPromoted) {
+        if (a.rankScore !== b.rankScore) return b.rankScore - a.rankScore;
+      }
+      
+      // Then by publishedAt (newest first)
+      return new Date(b.publishedAt).getTime() - new Date(a.publishedAt).getTime();
+    });
     
     const offset = params?.offset || 0;
     const limit = params?.limit || 20;
@@ -170,6 +200,28 @@ export class MemStorage implements IStorage {
     if (!article) return undefined;
 
     article.likes += 1;
+    this.articles.set(id, article);
+    return article;
+  }
+
+  async promoteArticle(id: string, rankScore: number = 100): Promise<Article | undefined> {
+    const article = this.articles.get(id);
+    if (!article) return undefined;
+
+    article.isPromoted = true;
+    article.rankScore = rankScore;
+    article.promotedAt = new Date();
+    this.articles.set(id, article);
+    return article;
+  }
+
+  async unpromoteArticle(id: string): Promise<Article | undefined> {
+    const article = this.articles.get(id);
+    if (!article) return undefined;
+
+    article.isPromoted = false;
+    article.rankScore = 0;
+    article.promotedAt = null;
     this.articles.set(id, article);
     return article;
   }
