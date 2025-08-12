@@ -1,8 +1,9 @@
 import { useState, useEffect, useRef } from "react";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
-import { Search, Bookmark, Menu, Newspaper, ChevronDown } from "lucide-react";
+import { Search, Bookmark, Menu, ChevronDown } from "lucide-react";
 import { useQuery } from "@tanstack/react-query";
+import rmLogo from "@assets/rm_logo_1755024192058.png";
 
 interface HeaderProps {
   onSearch: (query: string) => void;
@@ -59,9 +60,12 @@ export default function Header({ onSearch, searchQuery, sessionId, onCategoryCha
           {/* Logo */}
           <div className="flex items-center space-x-4">
             <div className="flex items-center space-x-2">
-              <div className="w-8 h-8 bg-gradient-to-r from-pride-indigo to-pride-pink rounded-lg flex items-center justify-center">
-                <Newspaper className="text-white text-sm" size={16} />
-              </div>
+              <img 
+                src={rmLogo} 
+                alt="Rainbow Map News Logo" 
+                className="w-8 h-8"
+                data-testid="img-logo"
+              />
               <span className="text-xl font-bold text-gray-900" data-testid="text-logo">
                 Rainbow Map News
               </span>
