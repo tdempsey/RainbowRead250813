@@ -248,6 +248,44 @@ export async function registerRoutes(app: Express): Promise<Server> {
     }
   });
 
+  // Category management endpoints
+  app.post("/api/categories", async (req, res) => {
+    try {
+      const categoryData = req.body;
+      const category = await storage.createCategory(categoryData);
+      res.status(201).json(category);
+    } catch (error) {
+      console.error('Error creating category:', error);
+      res.status(500).json({ message: "Failed to create category" });
+    }
+  });
+
+  app.delete("/api/categories/:id", async (req, res) => {
+    try {
+      const deleted = await storage.deleteCategory(req.params.id);
+      if (!deleted) {
+        return res.status(404).json({ message: "Category not found" });
+      }
+      res.status(204).send();
+    } catch (error) {
+      console.error('Error deleting category:', error);
+      res.status(500).json({ message: "Failed to delete category" });
+    }
+  });
+
+  app.patch("/api/categories/:id", async (req, res) => {
+    try {
+      const updated = await storage.updateCategory(req.params.id, req.body);
+      if (!updated) {
+        return res.status(404).json({ message: "Category not found" });
+      }
+      res.json(updated);
+    } catch (error) {
+      console.error('Error updating category:', error);
+      res.status(500).json({ message: "Failed to update category" });
+    }
+  });
+
   const httpServer = createServer(app);
   return httpServer;
 }

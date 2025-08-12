@@ -26,6 +26,8 @@ export interface IStorage {
   // Categories
   getCategories(): Promise<Category[]>;
   createCategory(category: InsertCategory): Promise<Category>;
+  updateCategory(id: string, updates: Partial<InsertCategory>): Promise<Category | undefined>;
+  deleteCategory(id: string): Promise<boolean>;
 }
 
 export class MemStorage implements IStorage {
@@ -232,7 +234,7 @@ export class MemStorage implements IStorage {
   }
 
   async getCategories(): Promise<Category[]> {
-    return Array.from(this.categories.values()).filter(cat => cat.isActive);
+    return Array.from(this.categories.values());
   }
 
   async createCategory(categoryData: InsertCategory): Promise<Category> {
@@ -245,6 +247,37 @@ export class MemStorage implements IStorage {
     };
     this.categories.set(id, category);
     return category;
+  }
+
+  async updateCategory(id: string, updates: Partial<InsertCategory>): Promise<Category | undefined> {
+    // Find category by ID or name (for backwards compatibility)
+    let category = this.categories.get(id);
+    if (!category) {
+      // Try finding by name
+      category = Array.from(this.categories.values()).find(c => c.name === id);
+    }
+    if (!category) return undefined;
+
+    const updatedCategory = { ...category, ...updates };
+    this.categories.set(category.id, updatedCategory);
+    return updatedCategory;
+  }
+
+  async deleteCategory(id: string): Promise<boolean> {
+    // Find category by ID or name (for backwards compatibility)
+    let categoryId = id;
+    const category = Array.from(this.categories.values()).find(c => c.name === id || c.id === id);
+    if (category) {
+      categoryId = category.id;
+    }
+    
+    // Don't allow deleting the "all" category
+    const categoryToDelete = this.categories.get(categoryId);
+    if (categoryToDelete?.slug === 'all') {
+      return false;
+    }
+    
+    return this.categories.delete(categoryId);
   }
 }
 

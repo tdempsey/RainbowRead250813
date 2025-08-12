@@ -23,6 +23,13 @@ export default function AdminPanel() {
     isActive: true
   });
 
+  const [newCategory, setNewCategory] = useState({
+    name: "",
+    slug: "",
+    description: "",
+    isActive: true
+  });
+
   // Queries
   const { data: sources = [] } = useQuery<RssSource[]>({
     queryKey: ["/api/sources"],
@@ -32,7 +39,7 @@ export default function AdminPanel() {
     queryKey: ["/api/articles", { limit: 100 }],
   });
 
-  const { data: categories = [] } = useQuery<{name: string, slug: string, description: string}[]>({
+  const { data: categories = [] } = useQuery<{name: string, slug: string, description: string | null, isActive: boolean, id: string}[]>({
     queryKey: ["/api/categories"],
   });
 
@@ -89,10 +96,78 @@ export default function AdminPanel() {
     },
   });
 
+  // Category mutations
+  const addCategoryMutation = useMutation({
+    mutationFn: async (category: typeof newCategory) => {
+      const response = await fetch("/api/categories", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify(category),
+      });
+      if (!response.ok) throw new Error("Failed to add category");
+      return response.json();
+    },
+    onSuccess: () => {
+      toast({ title: "Success", description: "Category added successfully" });
+      queryClient.invalidateQueries({ queryKey: ["/api/categories"] });
+      setNewCategory({ name: "", slug: "", description: "", isActive: true });
+    },
+    onError: () => {
+      toast({ title: "Error", description: "Failed to add category", variant: "destructive" });
+    },
+  });
+
+  const deleteCategoryMutation = useMutation({
+    mutationFn: async (categoryId: string) => {
+      const response = await fetch(`/api/categories/${categoryId}`, {
+        method: "DELETE",
+      });
+      if (!response.ok) throw new Error("Failed to delete category");
+    },
+    onSuccess: () => {
+      toast({ title: "Success", description: "Category deleted successfully" });
+      queryClient.invalidateQueries({ queryKey: ["/api/categories"] });
+    },
+    onError: () => {
+      toast({ title: "Error", description: "Failed to delete category", variant: "destructive" });
+    },
+  });
+
+  const toggleCategoryMutation = useMutation({
+    mutationFn: async ({ categoryId, isActive }: { categoryId: string, isActive: boolean }) => {
+      const response = await fetch(`/api/categories/${categoryId}`, {
+        method: "PATCH",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ isActive }),
+      });
+      if (!response.ok) throw new Error("Failed to update category");
+      return response.json();
+    },
+    onSuccess: () => {
+      toast({ title: "Success", description: "Category updated successfully" });
+      queryClient.invalidateQueries({ queryKey: ["/api/categories"] });
+    },
+    onError: () => {
+      toast({ title: "Error", description: "Failed to update category", variant: "destructive" });
+    },
+  });
+
   const handleAddSource = (e: React.FormEvent) => {
     e.preventDefault();
     if (!newSource.name || !newSource.url) return;
     addSourceMutation.mutate(newSource);
+  };
+
+  const handleAddCategory = (e: React.FormEvent) => {
+    e.preventDefault();
+    if (!newCategory.name || !newCategory.slug) return;
+    addCategoryMutation.mutate(newCategory);
+  };
+
+  // Auto-generate slug from name
+  const handleCategoryNameChange = (name: string) => {
+    const slug = name.toLowerCase().replace(/[^a-z0-9]+/g, '-').replace(/(^-|-$)/g, '');
+    setNewCategory({ ...newCategory, name, slug });
   };
 
   // Statistics
@@ -121,7 +196,7 @@ export default function AdminPanel() {
 
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
         <Tabs defaultValue="overview" className="space-y-6">
-          <TabsList className="grid w-full grid-cols-4">
+          <TabsList className="grid w-full grid-cols-5">
             <TabsTrigger value="overview" className="flex items-center gap-2">
               <BarChart3 size={16} />
               Overview
@@ -132,6 +207,9 @@ export default function AdminPanel() {
             </TabsTrigger>
             <TabsTrigger value="articles" className="flex items-center gap-2">
               Articles
+            </TabsTrigger>
+            <TabsTrigger value="categories" className="flex items-center gap-2">
+              Categories
             </TabsTrigger>
             <TabsTrigger value="settings" className="flex items-center gap-2">
               <Settings size={16} />
@@ -379,6 +457,130 @@ export default function AdminPanel() {
                       </div>
                       <div className="text-xs text-gray-500">
                         {new Date(article.publishedAt).toLocaleDateString()}
+                      </div>
+                    </div>
+                  ))}
+                </div>
+              </CardContent>
+            </Card>
+          </TabsContent>
+
+          {/* Categories Tab */}
+          <TabsContent value="categories" className="space-y-6">
+            {/* Add New Category */}
+            <Card>
+              <CardHeader>
+                <CardTitle className="flex items-center gap-2">
+                  <Plus size={20} />
+                  Add Category
+                </CardTitle>
+                <CardDescription>
+                  Create a new category for organizing articles
+                </CardDescription>
+              </CardHeader>
+              <CardContent>
+                <form onSubmit={handleAddCategory} className="space-y-4">
+                  <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                    <div className="space-y-2">
+                      <Label htmlFor="category-name">Category Name</Label>
+                      <Input
+                        id="category-name"
+                        placeholder="e.g., Sports"
+                        value={newCategory.name}
+                        onChange={(e) => handleCategoryNameChange(e.target.value)}
+                        data-testid="input-category-name"
+                      />
+                    </div>
+
+                    <div className="space-y-2">
+                      <Label htmlFor="category-slug">Category Slug</Label>
+                      <Input
+                        id="category-slug"
+                        placeholder="e.g., sports"
+                        value={newCategory.slug}
+                        onChange={(e) => setNewCategory({ ...newCategory, slug: e.target.value })}
+                        data-testid="input-category-slug"
+                      />
+                    </div>
+
+                    <div className="space-y-2 md:col-span-2">
+                      <Label htmlFor="category-description">Description</Label>
+                      <Input
+                        id="category-description"
+                        placeholder="Brief description of this category"
+                        value={newCategory.description}
+                        onChange={(e) => setNewCategory({ ...newCategory, description: e.target.value })}
+                        data-testid="input-category-description"
+                      />
+                    </div>
+
+                    <div className="flex items-center space-x-2">
+                      <Switch
+                        id="category-active"
+                        checked={newCategory.isActive}
+                        onCheckedChange={(checked) => setNewCategory({ ...newCategory, isActive: checked })}
+                        data-testid="switch-category-active"
+                      />
+                      <Label htmlFor="category-active">Active</Label>
+                    </div>
+                  </div>
+
+                  <Button 
+                    type="submit" 
+                    disabled={addCategoryMutation.isPending}
+                    data-testid="button-add-category"
+                  >
+                    {addCategoryMutation.isPending ? "Adding..." : "Add Category"}
+                  </Button>
+                </form>
+              </CardContent>
+            </Card>
+
+            {/* Categories List */}
+            <Card>
+              <CardHeader>
+                <CardTitle>Categories</CardTitle>
+                <CardDescription>
+                  Manage your article categories
+                </CardDescription>
+              </CardHeader>
+              <CardContent>
+                <div className="space-y-4">
+                  {categories.map((category) => (
+                    <div key={category.name} className="flex items-center justify-between p-4 border rounded-lg">
+                      <div className="flex-1">
+                        <div className="flex items-center gap-2 mb-2">
+                          <h3 className="font-semibold">{category.name}</h3>
+                          {!category.isActive && (
+                            <Badge variant="destructive">Inactive</Badge>
+                          )}
+                        </div>
+                        <p className="text-sm text-gray-600 mb-1">Slug: {category.slug}</p>
+                        {category.description && (
+                          <p className="text-xs text-gray-500">{category.description}</p>
+                        )}
+                      </div>
+                      <div className="flex items-center gap-2">
+                        <Switch
+                          checked={category.isActive}
+                          onCheckedChange={(checked) => 
+                            toggleCategoryMutation.mutate({ 
+                              categoryId: category.name, // Using name as ID since categories don't expose ID
+                              isActive: checked 
+                            })
+                          }
+                          disabled={toggleCategoryMutation.isPending}
+                          data-testid={`switch-category-${category.slug}`}
+                        />
+                        <Button
+                          size="sm"
+                          variant="destructive"
+                          onClick={() => deleteCategoryMutation.mutate(category.name)}
+                          disabled={deleteCategoryMutation.isPending || category.slug === 'all'}
+                          data-testid={`button-delete-category-${category.slug}`}
+                        >
+                          <Trash2 size={16} />
+                        </Button>
                       </div>
                     </div>
                   ))}
