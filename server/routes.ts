@@ -202,6 +202,52 @@ export async function registerRoutes(app: Express): Promise<Server> {
     }
   });
 
+  // Admin endpoints for RSS source management
+  app.post("/api/sources", async (req, res) => {
+    try {
+      const sourceData = req.body;
+      const source = await storage.createRssSource(sourceData);
+      res.status(201).json(source);
+    } catch (error) {
+      console.error('Error creating RSS source:', error);
+      res.status(500).json({ message: "Failed to create RSS source" });
+    }
+  });
+
+  app.delete("/api/sources/:id", async (req, res) => {
+    try {
+      const deleted = await storage.deleteRssSource(req.params.id);
+      if (!deleted) {
+        return res.status(404).json({ message: "RSS source not found" });
+      }
+      res.status(204).send();
+    } catch (error) {
+      console.error('Error deleting RSS source:', error);
+      res.status(500).json({ message: "Failed to delete RSS source" });
+    }
+  });
+
+  app.post("/api/sources/:id/refresh", async (req, res) => {
+    try {
+      const sources = await storage.getRssSources();
+      const source = sources.find(s => s.id === req.params.id);
+      if (!source) {
+        return res.status(404).json({ message: "RSS source not found" });
+      }
+      
+      // Fetch articles from this specific source
+      const articles = await rssService.fetchFromSource(source);
+      for (const article of articles) {
+        await storage.createArticle(article);
+      }
+      
+      res.json({ message: `Fetched ${articles.length} new articles`, count: articles.length });
+    } catch (error) {
+      console.error('Error refreshing RSS feed:', error);
+      res.status(500).json({ message: "Failed to refresh RSS feed" });
+    }
+  });
+
   const httpServer = createServer(app);
   return httpServer;
 }

@@ -1,8 +1,9 @@
 import { useState } from "react";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
-import { Search, Bookmark, Menu } from "lucide-react";
+import { Search, Bookmark, Menu, Settings } from "lucide-react";
 import { useQuery } from "@tanstack/react-query";
+import { Link } from "wouter";
 import rmLogo from "@assets/rm_logo_1755024192058.png";
 
 interface HeaderProps {
@@ -93,6 +94,19 @@ export default function Header({ onSearch, searchQuery, sessionId }: HeaderProps
                 </Button>
               </div>
             </form>
+
+            {/* Admin Link */}
+            <Link href="/admin">
+              <Button
+                variant="ghost"
+                size="sm"
+                className="text-gray-600 hover:text-gray-900 hidden md:flex items-center gap-2"
+                data-testid="button-admin"
+              >
+                <Settings size={16} />
+                Admin
+              </Button>
+            </Link>
 
             {/* Bookmark Button */}
             <Button

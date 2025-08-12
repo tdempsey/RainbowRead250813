@@ -16,6 +16,7 @@ export interface IStorage {
   getActiveRssSources(): Promise<RssSource[]>;
   createRssSource(source: InsertRssSource): Promise<RssSource>;
   updateRssSource(id: string, updates: Partial<InsertRssSource>): Promise<RssSource | undefined>;
+  deleteRssSource(id: string): Promise<boolean>;
   
   // Bookmarks
   getBookmarksBySession(sessionId: string): Promise<Bookmark[]>;
@@ -106,6 +107,7 @@ export class MemStorage implements IStorage {
     const id = randomUUID();
     const article: Article = {
       ...articleData,
+      tags: articleData.tags || [],
       id,
       createdAt: new Date(),
       likes: 0,
@@ -182,6 +184,8 @@ export class MemStorage implements IStorage {
     const id = randomUUID();
     const source: RssSource = {
       ...sourceData,
+      isActive: sourceData.isActive ?? true,
+      isLgbtqFocused: sourceData.isLgbtqFocused ?? false,
       id,
       lastFetched: null,
     };
@@ -196,6 +200,10 @@ export class MemStorage implements IStorage {
     const updatedSource = { ...source, ...updates };
     this.rssSources.set(id, updatedSource);
     return updatedSource;
+  }
+
+  async deleteRssSource(id: string): Promise<boolean> {
+    return this.rssSources.delete(id);
   }
 
   async getBookmarksBySession(sessionId: string): Promise<Bookmark[]> {
@@ -231,6 +239,8 @@ export class MemStorage implements IStorage {
     const id = randomUUID();
     const category: Category = {
       ...categoryData,
+      isActive: categoryData.isActive ?? true,
+      description: categoryData.description ?? null,
       id,
     };
     this.categories.set(id, category);
