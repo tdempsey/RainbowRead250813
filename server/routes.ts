@@ -327,6 +327,46 @@ export async function registerRoutes(app: Express): Promise<Server> {
     }
   });
 
+  // Article hiding endpoints
+  app.post("/api/articles/:id/hide", async (req, res) => {
+    try {
+      const article = await storage.hideArticle(req.params.id);
+      if (!article) {
+        return res.status(404).json({ message: "Article not found" });
+      }
+      res.json(article);
+    } catch (error) {
+      console.error('Error hiding article:', error);
+      res.status(500).json({ message: "Failed to hide article" });
+    }
+  });
+
+  app.delete("/api/articles/:id/hide", async (req, res) => {
+    try {
+      const article = await storage.unhideArticle(req.params.id);
+      if (!article) {
+        return res.status(404).json({ message: "Article not found" });
+      }
+      res.json(article);
+    } catch (error) {
+      console.error('Error unhiding article:', error);
+      res.status(500).json({ message: "Failed to unhide article" });
+    }
+  });
+
+  app.delete("/api/articles/:id", async (req, res) => {
+    try {
+      const success = await storage.deleteArticle(req.params.id);
+      if (!success) {
+        return res.status(404).json({ message: "Article not found" });
+      }
+      res.json({ success: true });
+    } catch (error) {
+      console.error('Error deleting article:', error);
+      res.status(500).json({ message: "Failed to delete article" });
+    }
+  });
+
   const httpServer = createServer(app);
   return httpServer;
 }

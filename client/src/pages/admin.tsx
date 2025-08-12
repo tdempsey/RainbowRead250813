@@ -8,7 +8,7 @@ import { Badge } from "@/components/ui/badge";
 import { Label } from "@/components/ui/label";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 import { Switch } from "@/components/ui/switch";
-import { Trash2, Plus, RefreshCw, Settings, Rss, BarChart3, GripVertical, ArrowUp, ArrowDown, Star, TrendingUp, Edit, MoveUp, MoveDown, Target } from "lucide-react";
+import { Trash2, Plus, RefreshCw, Settings, Rss, BarChart3, GripVertical, ArrowUp, ArrowDown, Star, TrendingUp, Edit, MoveUp, MoveDown, Target, EyeOff, Eye } from "lucide-react";
 import { queryClient } from "@/lib/queryClient";
 import { useToast } from "@/hooks/use-toast";
 import type { RssSource, Article } from "@shared/schema";
@@ -298,6 +298,64 @@ export default function AdminPanel() {
   const quickRank = (articleId: string, score: number) => {
     promoteArticleMutation.mutate({ articleId, rankScore: score });
   };
+
+  // Story management mutations
+  const hideArticleMutation = useMutation({
+    mutationFn: async (articleId: string) => {
+      const response = await fetch(`/api/articles/${articleId}/hide`, {
+        method: "POST",
+      });
+      if (!response.ok) throw new Error("Failed to hide article");
+      return response.json();
+    },
+    onSuccess: () => {
+      toast({ title: "Success", description: "Article hidden successfully" });
+      queryClient.invalidateQueries({ queryKey: ["/api/articles"] });
+    },
+    onError: () => {
+      toast({ title: "Error", description: "Failed to hide article", variant: "destructive" });
+    },
+  });
+
+  const unhideArticleMutation = useMutation({
+    mutationFn: async (articleId: string) => {
+      const response = await fetch(`/api/articles/${articleId}/hide`, {
+        method: "DELETE",
+      });
+      if (!response.ok) throw new Error("Failed to unhide article");
+      return response.json();
+    },
+    onSuccess: () => {
+      toast({ title: "Success", description: "Article unhidden successfully" });
+      queryClient.invalidateQueries({ queryKey: ["/api/articles"] });
+    },
+    onError: () => {
+      toast({ title: "Error", description: "Failed to unhide article", variant: "destructive" });
+    },
+  });
+
+  const deleteArticleMutation = useMutation({
+    mutationFn: async (articleId: string) => {
+      const response = await fetch(`/api/articles/${articleId}`, {
+        method: "DELETE",
+      });
+      if (!response.ok) throw new Error("Failed to delete article");
+      return response.json();
+    },
+    onSuccess: () => {
+      toast({ title: "Success", description: "Article deleted permanently" });
+      queryClient.invalidateQueries({ queryKey: ["/api/articles"] });
+    },
+    onError: () => {
+      toast({ title: "Error", description: "Failed to delete article", variant: "destructive" });
+    },
+  });
+
+  // Get all articles including hidden ones for admin
+  const { data: allArticles = [] } = useQuery<Article[]>({
+    queryKey: ["/api/articles", { includeHidden: true }],
+    queryFn: () => fetch("/api/articles?includeHidden=true").then(res => res.json()),
+  });
 
   // Statistics
   const stats = {
@@ -890,26 +948,104 @@ export default function AdminPanel() {
           <TabsContent value="settings" className="space-y-6">
             <Card>
               <CardHeader>
-                <CardTitle>System Settings</CardTitle>
+                <CardTitle>Story Management</CardTitle>
                 <CardDescription>
-                  Configure RSS aggregation and content management
+                  Hide or permanently delete articles from your platform
                 </CardDescription>
               </CardHeader>
-              <CardContent className="space-y-4">
-                <div className="text-sm text-gray-600">
-                  <h4 className="font-semibold mb-2">Current Configuration:</h4>
-                  <ul className="space-y-1">
-                    <li>• RSS feeds are fetched every 30 minutes</li>
-                    <li>• NewsAPI integration runs every 2 hours</li>
-                    <li>• LGBTQ+ content detection is automatic</li>
-                    <li>• Articles are automatically categorized</li>
-                  </ul>
-                </div>
-                
-                <div className="pt-4 border-t">
-                  <Button variant="outline" className="w-full">
-                    Advanced Settings (Coming Soon)
-                  </Button>
+              <CardContent>
+                <div className="space-y-4">
+                  {allArticles.map((article) => (
+                    <div key={article.id} className="p-4 border rounded-lg bg-white relative">
+                      {/* Status Badges */}
+                      <div className="absolute top-2 right-2 flex gap-1">
+                        {article.isPromoted && (
+                          <Badge variant="default" className="text-xs bg-yellow-500 text-black">
+                            <Star size={12} className="mr-1" />
+                            Promoted #{article.rankScore}
+                          </Badge>
+                        )}
+                        {article.isHidden && (
+                          <Badge variant="destructive" className="text-xs">
+                            <EyeOff size={12} className="mr-1" />
+                            Hidden
+                          </Badge>
+                        )}
+                      </div>
+                      
+                      <div className="flex items-start justify-between mb-2 pr-32">
+                        <div className="flex-1">
+                          <h3 className="font-semibold text-sm mb-1 line-clamp-2">{article.title}</h3>
+                          <p className="text-xs text-gray-600 mb-2">{article.excerpt}</p>
+                          <div className="flex items-center gap-2 text-xs mb-3">
+                            <Badge variant="outline">{article.category}</Badge>
+                            <span className="text-gray-500">{article.source}</span>
+                            {article.isLgbtqFocused && (
+                              <Badge variant="secondary">LGBTQ+</Badge>
+                            )}
+                            <span className="text-gray-500">
+                              {article.likes || 0} likes
+                            </span>
+                          </div>
+                          
+                          {/* Action Buttons */}
+                          <div className="flex items-center gap-2">
+                            {article.isHidden ? (
+                              <Button
+                                size="sm"
+                                variant="outline"
+                                onClick={() => unhideArticleMutation.mutate(article.id)}
+                                disabled={unhideArticleMutation.isPending}
+                                className="text-xs px-2 py-1"
+                                data-testid={`button-unhide-${article.id}`}
+                              >
+                                <Eye size={12} className="mr-1" />
+                                Unhide
+                              </Button>
+                            ) : (
+                              <Button
+                                size="sm"
+                                variant="outline"
+                                onClick={() => hideArticleMutation.mutate(article.id)}
+                                disabled={hideArticleMutation.isPending}
+                                className="text-xs px-2 py-1"
+                                data-testid={`button-hide-${article.id}`}
+                              >
+                                <EyeOff size={12} className="mr-1" />
+                                Hide
+                              </Button>
+                            )}
+                            
+                            <Button
+                              size="sm"
+                              variant="destructive"
+                              onClick={() => {
+                                if (confirm("Are you sure you want to permanently delete this article? This action cannot be undone.")) {
+                                  deleteArticleMutation.mutate(article.id);
+                                }
+                              }}
+                              disabled={deleteArticleMutation.isPending}
+                              className="text-xs px-2 py-1"
+                              data-testid={`button-delete-${article.id}`}
+                            >
+                              <Trash2 size={12} className="mr-1" />
+                              Delete
+                            </Button>
+                          </div>
+                        </div>
+                        
+                        <div className="text-xs text-gray-500 flex-shrink-0">
+                          {new Date(article.publishedAt).toLocaleDateString()}
+                        </div>
+                      </div>
+                    </div>
+                  ))}
+                  
+                  {allArticles.length === 0 && (
+                    <div className="text-center text-gray-500 py-8">
+                      No articles available for management
+                    </div>
+                  )}
                 </div>
               </CardContent>
             </Card>

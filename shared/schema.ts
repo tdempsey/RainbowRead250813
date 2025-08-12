@@ -22,6 +22,8 @@ export const articles = pgTable("articles", {
   isPromoted: boolean("is_promoted").notNull().default(false),
   rankScore: integer("rank_score").notNull().default(0),
   promotedAt: timestamp("promoted_at"),
+  isHidden: boolean("is_hidden").notNull().default(false),
+  hiddenAt: timestamp("hidden_at"),
   searchVector: text("search_vector"), // For full-text search indexing
 });
 
@@ -59,6 +61,8 @@ export const insertArticleSchema = createInsertSchema(articles).omit({
   isPromoted: true,
   rankScore: true,
   promotedAt: true,
+  isHidden: true,
+  hiddenAt: true,
   searchVector: true,
 });
 

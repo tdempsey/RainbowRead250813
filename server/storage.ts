@@ -12,6 +12,9 @@ export interface IStorage {
   likeArticle(id: string): Promise<Article | undefined>;
   promoteArticle(id: string, rankScore?: number): Promise<Article | undefined>;
   unpromoteArticle(id: string): Promise<Article | undefined>;
+  hideArticle(id: string): Promise<Article | undefined>;
+  unhideArticle(id: string): Promise<Article | undefined>;
+  getAllArticles(includeHidden?: boolean): Promise<Article[]>;
   
   // RSS Sources
   getRssSources(): Promise<RssSource[]>;
@@ -80,6 +83,9 @@ export class MemStorage implements IStorage {
     console.log(`Getting articles: total in storage = ${this.articles.size}, params =`, params);
     let articles = Array.from(this.articles.values());
 
+    // Filter out hidden articles from public view
+    articles = articles.filter(a => !a.isHidden);
+
     if (params) {
       if (params.category && params.category !== 'all') {
         articles = articles.filter(a => a.category.toLowerCase() === params.category!.toLowerCase());
@@ -123,13 +129,17 @@ export class MemStorage implements IStorage {
     const id = randomUUID();
     const article: Article = {
       ...articleData,
+      imageUrl: articleData.imageUrl || null,
       tags: articleData.tags || [],
+      isLgbtqFocused: articleData.isLgbtqFocused || false,
       id,
       createdAt: new Date(),
       likes: 0,
       isPromoted: false,
       rankScore: 0,
       promotedAt: null,
+      isHidden: false,
+      hiddenAt: null,
       searchVector: '',
     };
     
@@ -155,6 +165,9 @@ export class MemStorage implements IStorage {
   async searchArticles(query: string, params?: SearchParams): Promise<Article[]> {
     const searchTerms = query.toLowerCase().split(' ');
     let articles = Array.from(this.articles.values());
+
+    // Filter out hidden articles from public search
+    articles = articles.filter(a => !a.isHidden);
 
     // Filter by search terms
     articles = articles.filter(article => {
@@ -195,6 +208,31 @@ export class MemStorage implements IStorage {
     return articles.slice(offset, offset + limit);
   }
 
+  async getAllArticles(includeHidden: boolean = false): Promise<Article[]> {
+    let articles = Array.from(this.articles.values());
+    
+    if (!includeHidden) {
+      articles = articles.filter(a => !a.isHidden);
+    }
+    
+    // Sort by promotion status and rank score first, then by publishedAt
+    articles.sort((a, b) => {
+      // Promoted articles first
+      if (a.isPromoted && !b.isPromoted) return -1;
+      if (!a.isPromoted && b.isPromoted) return 1;
+      
+      // If both promoted, sort by rank score (higher first)
+      if (a.isPromoted && b.isPromoted) {
+        if (a.rankScore !== b.rankScore) return b.rankScore - a.rankScore;
+      }
+      
+      // Then by publishedAt (newest first)
+      return new Date(b.publishedAt).getTime() - new Date(a.publishedAt).getTime();
+    });
+    
+    return articles;
+  }
+
   async likeArticle(id: string): Promise<Article | undefined> {
     const article = this.articles.get(id);
     if (!article) return undefined;
@@ -222,6 +260,26 @@ export class MemStorage implements IStorage {
     article.isPromoted = false;
     article.rankScore = 0;
     article.promotedAt = null;
+    this.articles.set(id, article);
+    return article;
+  }
+
+  async hideArticle(id: string): Promise<Article | undefined> {
+    const article = this.articles.get(id);
+    if (!article) return undefined;
+
+    article.isHidden = true;
+    article.hiddenAt = new Date();
+    this.articles.set(id, article);
+    return article;
+  }
+
+  async unhideArticle(id: string): Promise<Article | undefined> {
+    const article = this.articles.get(id);
+    if (!article) return undefined;
+
+    article.isHidden = false;
+    article.hiddenAt = null;
     this.articles.set(id, article);
     return article;
   }
