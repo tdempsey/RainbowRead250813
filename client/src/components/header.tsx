@@ -48,7 +48,7 @@ export default function Header({ onSearch, searchQuery, sessionId }: HeaderProps
                 className="w-8 h-8"
                 data-testid="img-logo"
               />
-              <span className="text-xl font-bold text-gray-900" data-testid="text-logo">
+              <span className="text-lg font-bold text-gray-900" data-testid="text-logo">
                 Rainbow Map News
               </span>
             </div>
