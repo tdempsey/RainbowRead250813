@@ -1,0 +1,166 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1" />
+<title>Breaking News Cards – HTML/CSS Examples</title>
+<style>
+  /* ===== Design tokens ===== */
+  :root{
+    --crimson:#B00020;        /* urgent */
+    --ink-on-crimson:#ffffff;
+
+    --subtle-bg:#FFF5F5;      /* calm alert */
+    --subtle-ink:#7F1D1D;
+
+    --amber-bg:#FFFAEB;       /* developing */
+    --amber-ink:#7A4A00;
+    --amber-border:#FF8F00;
+
+    --body-ink:#111827;
+    --radius:12px;
+    --shadow:0 6px 20px rgba(0,0,0,.10);
+  }
+
+  body{
+    font-family: system-ui, -apple-system, "Segoe UI", Roboto, Arial, sans-serif;
+    color: var(--body-ink);
+    background:#f6f7fb;
+    margin:0;
+    padding:32px;
+  }
+  .wrap{ max-width:680px; margin-inline:auto; display:grid; gap:20px; }
+
+  /* ===== Shared card styles ===== */
+  .breaking{
+    border-radius: var(--radius);
+    padding:16px;
+    box-shadow: var(--shadow);
+  }
+  .pill{
+    display:inline-flex;
+    align-items:center;
+    gap:.5rem;
+    font-weight:700;
+    font-size:.75rem;
+    line-height:1;
+    padding:6px 10px;
+    border-radius:999px;
+    letter-spacing:.02em;
+  }
+  .list{ margin:12px 0 0; padding:0; list-style:none; }
+  .list li{ display:flex; gap:.5rem; align-items:flex-start; }
+  .list a{
+    text-decoration: underline;
+    text-underline-offset: 2px;
+  }
+  .list time{
+    flex:0 0 auto;
+    font-size:.75rem;
+    opacity:.85;
+    margin-top:.15rem;
+    width:3.2rem; /* keeps times aligned */
+  }
+
+  /* ===== Variants ===== */
+  /* 1) Full-alert crimson */
+  .breaking--crimson{
+    background: var(--crimson);
+    color: var(--ink-on-crimson);
+  }
+  .breaking--crimson .pill{
+    background: rgba(255,255,255,.15);
+    color: var(--ink-on-crimson);
+  }
+  .breaking--crimson a{
+    color: var(--ink-on-crimson);
+    text-decoration-color: rgba(255,255,255,.6);
+  }
+  .breaking--crimson a:hover{ text-decoration-color: #fff; }
+
+  /* 2) Subtle alert */
+  .breaking--subtle{
+    background: var(--subtle-bg);
+    color: var(--subtle-ink);
+    border-left:4px solid var(--crimson);
+  }
+  .breaking--subtle .pill{
+    background: var(--crimson);
+    color:#fff;
+  }
+  .breaking--subtle a{
+    color: var(--crimson);
+  }
+
+  /* 3) Amber “Developing” */
+  .breaking--amber{
+    background: var(--amber-bg);
+    color: var(--amber-ink);
+    border-left:4px solid var(--amber-border);
+  }
+  .breaking--amber .pill{
+    background: var(--amber-border);
+    color: var(--body-ink);
+  }
+  .breaking--amber a{
+    color: var(--amber-ink);
+  }
+
+  /* Optional dark-mode polish */
+  @media (prefers-color-scheme: dark){
+    body{ background:#0b0d12; color:#e5e7eb; }
+    .breaking{ box-shadow: 0 10px 24px rgba(0,0,0,.45); }
+    .breaking--subtle{ background:#2b1010; color:#ffdcdc; }
+    .breaking--amber{ background:#2b220c; color:#ffe2a3; }
+  }
+</style>
+</head>
+<body>
+  <main class="wrap">
+    <!-- 1) Urgent crimson -->
+    <section class="breaking breaking--crimson" role="region" aria-label="Breaking News">
+      <span class="pill" aria-hidden="true">⚡ Breaking News</span>
+      <ul class="list">
+        <li>
+          <time datetime="PT15M">15m</time>
+          <a href="#">Supreme Court to Hear Landmark LGBTQ+ Case</a>
+        </li>
+        <li>
+          <time datetime="PT32M">32m</time>
+          <a href="#">Major Company Announces Trans-inclusive Policy</a>
+        </li>
+      </ul>
+    </section>
+
+    <!-- 2) Subtle alert -->
+    <section class="breaking breaking--subtle" role="region" aria-label="Breaking News">
+      <span class="pill" aria-hidden="true">⚡ Breaking News</span>
+      <ul class="list">
+        <li>
+          <time datetime="PT1H">1h</time>
+          <a href="#">City Council Debates Rights Ordinance</a>
+        </li>
+        <li>
+          <time datetime="PT2H">2h</time>
+          <a href="#">New Study Tracks LGBTQ+ Youth Outcomes</a>
+        </li>
+      </ul>
+    </section>
+
+    <!-- 3) Amber developing -->
+    <section class="breaking breaking--amber" role="region" aria-label="Developing">
+      <span class="pill" aria-hidden="true">🟡 Developing</span>
+      <ul class="list">
+        <li>
+          <time datetime="PT20M">20m</time>
+          <a href="#">Severe Weather Could Impact Pride Events</a>
+        </li>
+        <li>
+          <time datetime="PT50M">50m</time>
+          <a href="#">Transit Disruptions Near Parade Route</a>
+        </li>
+      </ul>
+    </section>
+  </main>
+</body>
+</html>

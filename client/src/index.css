@@ -74,26 +74,116 @@
   --shadow: 0 6px 20px rgba(0,0,0,.10);
 }
 
-/* Breaking News utility classes */
-.breaking-news-urgent {
-  background-color: var(--crimson);
+/* ===== Breaking News Components ===== */
+.breaking {
+  border-radius: var(--radius);
+  padding: 16px;
+  box-shadow: var(--shadow);
+}
+
+.pill {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.5rem;
+  font-weight: 700;
+  font-size: 0.75rem;
+  line-height: 1;
+  padding: 6px 10px;
+  border-radius: 999px;
+  letter-spacing: 0.02em;
+}
+
+.breaking-list {
+  margin: 12px 0 0;
+  padding: 0;
+  list-style: none;
+}
+
+.breaking-list li {
+  display: flex;
+  gap: 0.5rem;
+  align-items: flex-start;
+}
+
+.breaking-list a {
+  text-decoration: underline;
+  text-underline-offset: 2px;
+}
+
+.breaking-list time {
+  flex: 0 0 auto;
+  font-size: 0.75rem;
+  opacity: 0.85;
+  margin-top: 0.15rem;
+  width: 3.2rem; /* keeps times aligned */
+}
+
+/* ===== Breaking News Variants ===== */
+/* 1) Full-alert crimson */
+.breaking--crimson {
+  background: var(--crimson);
   color: var(--ink-on-crimson);
 }
 
-.breaking-news-subtle {
-  background-color: var(--subtle-bg);
+.breaking--crimson .pill {
+  background: rgba(255, 255, 255, 0.15);
+  color: var(--ink-on-crimson);
+}
+
+.breaking--crimson a {
+  color: var(--ink-on-crimson);
+  text-decoration-color: rgba(255, 255, 255, 0.6);
+}
+
+.breaking--crimson a:hover {
+  text-decoration-color: #fff;
+}
+
+/* 2) Subtle alert */
+.breaking--subtle {
+  background: var(--subtle-bg);
   color: var(--subtle-ink);
+  border-left: 4px solid var(--crimson);
 }
 
-.breaking-news-developing {
-  background-color: var(--amber-bg);
+.breaking--subtle .pill {
+  background: var(--crimson);
+  color: #fff;
+}
+
+.breaking--subtle a {
+  color: var(--crimson);
+}
+
+/* 3) Amber "Developing" */
+.breaking--amber {
+  background: var(--amber-bg);
   color: var(--amber-ink);
-  border-color: var(--amber-border);
+  border-left: 4px solid var(--amber-border);
 }
 
-.breaking-news-shadow {
-  box-shadow: var(--shadow);
-  border-radius: var(--radius);
+.breaking--amber .pill {
+  background: var(--amber-border);
+  color: var(--body-ink);
+}
+
+.breaking--amber a {
+  color: var(--amber-ink);
+}
+
+/* Optional dark-mode polish */
+@media (prefers-color-scheme: dark) {
+  .breaking { 
+    box-shadow: 0 10px 24px rgba(0,0,0,.45); 
+  }
+  .breaking--subtle { 
+    background: #2b1010; 
+    color: #ffdcdc; 
+  }
+  .breaking--amber { 
+    background: #2b220c; 
+    color: #ffe2a3; 
+  }
 }
 
 .dark {

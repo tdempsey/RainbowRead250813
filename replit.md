@@ -8,6 +8,14 @@ Preferred communication style: Simple, everyday language.
 
 # Recent Changes
 
+**Breaking News CSS Enhancement (January 13, 2025):**
+- Redesigned Breaking News component with professional color system
+- Added three variants: crimson (urgent), subtle (calm alert), amber (developing)
+- Implemented proper semantic HTML with role attributes and accessibility features
+- Added consistent pill badges, time stamps, and hover states
+- Enhanced dark mode support with appropriate shadow and color adjustments
+- Used CSS custom properties for maintainable theming system
+
 **HTML Entity Decoding (January 13, 2025):**
 - Enhanced RSS parser to decode all HTML entities including numeric ones (&#8220;, &#8221;, etc.)
 - Created HTML entity utility function for comprehensive client-side decoding
