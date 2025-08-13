@@ -717,6 +717,45 @@ export default function AdminPanel() {
                                 </Button>
                               </div>
                             )}
+                            
+                            {/* Management Buttons */}
+                            <div className="flex items-center gap-1 ml-2">
+                              <Button
+                                size="sm"
+                                variant="outline"
+                                onClick={() => article.isHidden ? unhideArticleMutation.mutate(article.id) : hideArticleMutation.mutate(article.id)}
+                                disabled={hideArticleMutation.isPending || unhideArticleMutation.isPending}
+                                className="text-xs px-2 py-1"
+                                data-testid={`button-toggle-visibility-${article.id}`}
+                              >
+                                {article.isHidden ? (
+                                  <>
+                                    <Eye size={12} className="mr-1" />
+                                    Show
+                                  </>
+                                ) : (
+                                  <>
+                                    <EyeOff size={12} className="mr-1" />
+                                    Hide
+                                  </>
+                                )}
+                              </Button>
+                              <Button
+                                size="sm"
+                                variant="destructive"
+                                onClick={() => {
+                                  if (window.confirm('Are you sure you want to permanently delete this article? This action cannot be undone.')) {
+                                    deleteArticleMutation.mutate(article.id);
+                                  }
+                                }}
+                                disabled={deleteArticleMutation.isPending}
+                                className="text-xs px-2 py-1"
+                                data-testid={`button-delete-${article.id}`}
+                              >
+                                <Trash2 size={12} className="mr-1" />
+                                Delete
+                              </Button>
+                            </div>
                           </div>
                         </div>
                         
