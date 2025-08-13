@@ -57,6 +57,43 @@
   --gray-700: hsl(215 25% 27%);
   --gray-800: hsl(217 33% 17%);
   --gray-900: hsl(222 84% 5%);
+  
+  /* Breaking News theme colors */
+  --crimson: #B00020;        /* urgent */
+  --ink-on-crimson: #ffffff;
+  
+  --subtle-bg: #FFF5F5;      /* calm alert */
+  --subtle-ink: #7F1D1D;
+  
+  --amber-bg: #FFFAEB;       /* developing */
+  --amber-ink: #7A4A00;
+  --amber-border: #FF8F00;
+  
+  --body-ink: #111827;
+  --radius: 12px;
+  --shadow: 0 6px 20px rgba(0,0,0,.10);
+}
+
+/* Breaking News utility classes */
+.breaking-news-urgent {
+  background-color: var(--crimson);
+  color: var(--ink-on-crimson);
+}
+
+.breaking-news-subtle {
+  background-color: var(--subtle-bg);
+  color: var(--subtle-ink);
+}
+
+.breaking-news-developing {
+  background-color: var(--amber-bg);
+  color: var(--amber-ink);
+  border-color: var(--amber-border);
+}
+
+.breaking-news-shadow {
+  box-shadow: var(--shadow);
+  border-radius: var(--radius);
 }
 
 .dark {

@@ -197,25 +197,59 @@ export default function HeroSection({ article }: HeroSectionProps) {
           {/* Sidebar: Breaking & Trending */}
           <div className="space-y-6">
             {/* Breaking News */}
-            <div className="bg-red-50 border border-red-200 rounded-xl p-6">
+            <div 
+              className="border shadow-lg p-6"
+              style={{
+                backgroundColor: 'var(--subtle-bg)',
+                borderColor: 'var(--amber-border)',
+                borderRadius: 'var(--radius)',
+                boxShadow: 'var(--shadow)'
+              }}
+            >
               <div className="flex items-center space-x-2 mb-4">
-                <Zap className="text-red-500" size={20} />
-                <h3 className="text-lg font-bold text-red-900" data-testid="text-breaking-news-title">
+                <Zap style={{ color: 'var(--crimson)' }} size={20} />
+                <h3 
+                  className="text-lg font-bold" 
+                  style={{ color: 'var(--crimson)' }}
+                  data-testid="text-breaking-news-title"
+                >
                   Breaking News
                 </h3>
               </div>
               <div className="space-y-4">
-                <div className="border-b border-red-200 pb-4 last:border-b-0 last:pb-0">
-                  <h4 className="font-semibold text-red-900 text-sm mb-2">
+                <div 
+                  className="border-b pb-4 last:border-b-0 last:pb-0"
+                  style={{ borderColor: 'var(--amber-border)' }}
+                >
+                  <h4 
+                    className="font-semibold text-sm mb-2"
+                    style={{ color: 'var(--subtle-ink)' }}
+                  >
                     Supreme Court to Hear Landmark LGBTQ+ Case
                   </h4>
-                  <p className="text-xs text-red-700">15 minutes ago</p>
+                  <p 
+                    className="text-xs"
+                    style={{ color: 'var(--amber-ink)' }}
+                  >
+                    15 minutes ago
+                  </p>
                 </div>
-                <div className="border-b border-red-200 pb-4 last:border-b-0 last:pb-0">
-                  <h4 className="font-semibold text-red-900 text-sm mb-2">
+                <div 
+                  className="border-b pb-4 last:border-b-0 last:pb-0"
+                  style={{ borderColor: 'var(--amber-border)' }}
+                >
+                  <h4 
+                    className="font-semibold text-sm mb-2"
+                    style={{ color: 'var(--subtle-ink)' }}
+                  >
                     Major Company Announces Trans-Inclusive Policy
                   </h4>
-                  <p className="text-xs text-red-700">32 minutes ago</p>
+                  <p 
+                    className="text-xs"
+                    style={{ color: 'var(--amber-ink)' }}
+                  >
+                    32 minutes ago
+                  </p>
                 </div>
               </div>
             </div>
