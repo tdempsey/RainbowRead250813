@@ -8,12 +8,24 @@ Preferred communication style: Simple, everyday language.
 
 # Recent Changes
 
+**HTML Entity Decoding (January 13, 2025):**
+- Enhanced RSS parser to decode all HTML entities including numeric ones (&#8220;, &#8221;, etc.)
+- Created HTML entity utility function for comprehensive client-side decoding
+- Updated article cards and hero section to display properly decoded titles and excerpts
+- Added support for both numeric (&#8220;) and hexadecimal (&#x201C;) HTML entities
+- Fixed common punctuation entities like smart quotes, em dashes, and ellipses
+
 **Footer Implementation (January 13, 2025):**
 - Created responsive footer component with mobile and desktop versions
 - Mobile footer (md:hidden): Shows simplified 4-link menu for app/mobile screens
 - Desktop footer (hidden md:block): Shows full menu with About, Quick Links, Community, and Legal sections
 - Added pride-themed social media links with hover animations
 - Footer automatically adapts to screen size for optimal user experience
+
+**Documentation (January 13, 2025):**
+- Created comprehensive README.md with full project documentation
+- Documented features, architecture, setup instructions, and usage guidelines
+- Added development guide with project structure and contribution instructions
 
 # System Architecture
 
