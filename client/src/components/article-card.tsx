@@ -154,7 +154,7 @@ export default function ArticleCard({ article, sessionId }: ArticleCardProps) {
             className="text-xs bg-gray-100 text-gray-600"
             data-testid={`badge-source-${article.id}`}
           >
-            {article.sourceType === 'rss' ? 'RSS' : 'NewsAPI'}: {article.source}
+{article.source}
           </Badge>
         </div>
         
