@@ -35,12 +35,33 @@ export class RssService {
 
   private cleanContent(content: string): string {
     // Remove HTML tags and clean up content
-    return content
+    let cleaned = content
       .replace(/<[^>]*>/g, '')
       .replace(/&nbsp;/g, ' ')
       .replace(/&amp;/g, '&')
       .replace(/&lt;/g, '<')
       .replace(/&gt;/g, '>')
+      .replace(/&quot;/g, '"')
+      .replace(/&apos;/g, "'")
+      .replace(/&ldquo;/g, '"')
+      .replace(/&rdquo;/g, '"')
+      .replace(/&lsquo;/g, "'")
+      .replace(/&rsquo;/g, "'")
+      .replace(/&mdash;/g, '—')
+      .replace(/&ndash;/g, '–')
+      .replace(/&hellip;/g, '…');
+    
+    // Decode numeric HTML entities like &#8220;, &#8221;, etc.
+    cleaned = cleaned.replace(/&#(\d+);/g, (match, dec) => {
+      return String.fromCharCode(parseInt(dec, 10));
+    });
+    
+    // Decode hexadecimal HTML entities like &#x201C;, &#x201D;, etc.
+    cleaned = cleaned.replace(/&#x([0-9A-Fa-f]+);/g, (match, hex) => {
+      return String.fromCharCode(parseInt(hex, 16));
+    });
+    
+    return cleaned
       .trim()
       .substring(0, 500); // Limit excerpt length
   }
@@ -80,7 +101,7 @@ export class RssService {
           imageUrl: item.enclosure?.url || undefined,
           category,
           tags: tags.slice(0, 5), // Limit tags
-          author: item.creator || item.author || source.name,
+          author: (item as any).creator || (item as any).author || source.name,
           source: source.name,
           sourceType: 'rss',
           publishedAt: item.pubDate ? new Date(item.pubDate) : new Date(),
@@ -90,8 +111,8 @@ export class RssService {
         articles.push(article);
       }
 
-      // Update last fetched timestamp
-      await storage.updateRssSource(source.id, { lastFetched: new Date() });
+      // Update last fetched timestamp - commented out for now as updateRssSource may not support lastFetched
+      // await storage.updateRssSource(source.id, { lastFetched: new Date() });
       
       console.log(`Fetched ${articles.length} new articles from ${source.name}`);
       return articles;

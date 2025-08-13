@@ -4,6 +4,7 @@ import { Heart, Bookmark, Share2, Zap } from "lucide-react";
 import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
 import { apiRequest } from "@/lib/queryClient";
 import { useToast } from "@/hooks/use-toast";
+import { decodeHtmlEntities } from "@/lib/html-entities";
 import type { Article } from "@shared/schema";
 
 interface HeroSectionProps {
@@ -123,14 +124,14 @@ export default function HeroSection({ article }: HeroSectionProps) {
                   className="text-3xl sm:text-4xl font-bold text-gray-900 mb-4 leading-tight"
                   data-testid="text-featured-title"
                 >
-                  {article.title}
+                  {decodeHtmlEntities(article.title)}
                 </h1>
                 
                 <p 
                   className="text-lg text-gray-600 mb-6 leading-relaxed"
                   data-testid="text-featured-excerpt"
                 >
-                  {article.excerpt}
+                  {decodeHtmlEntities(article.excerpt)}
                 </p>
                 
                 <div className="flex items-center justify-between">

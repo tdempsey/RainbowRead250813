@@ -4,6 +4,7 @@ import { Heart, Bookmark, Share2 } from "lucide-react";
 import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
 import { apiRequest } from "@/lib/queryClient";
 import { useToast } from "@/hooks/use-toast";
+import { decodeHtmlEntities } from "@/lib/html-entities";
 import type { Article } from "@shared/schema";
 
 interface ArticleCardProps {
@@ -19,7 +20,7 @@ export default function ArticleCard({ article, sessionId }: ArticleCardProps) {
     queryKey: ["/api/bookmarks", { sessionId }],
   });
 
-  const isBookmarked = bookmarks.some((b: any) => b.articleId === article.id);
+  const isBookmarked = (bookmarks as any[]).some((b: any) => b.articleId === article.id);
 
   const likeMutation = useMutation({
     mutationFn: () => apiRequest("POST", `/api/articles/${article.id}/like`),
@@ -162,14 +163,14 @@ export default function ArticleCard({ article, sessionId }: ArticleCardProps) {
           onClick={handleArticleClick}
           data-testid={`text-title-${article.id}`}
         >
-          {article.title}
+          {decodeHtmlEntities(article.title)}
         </h3>
         
         <p 
           className="text-gray-600 mb-4 line-clamp-3"
           data-testid={`text-excerpt-${article.id}`}
         >
-          {article.excerpt}
+          {decodeHtmlEntities(article.excerpt)}
         </p>
         
         <div className="flex items-center justify-between">
