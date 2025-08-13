@@ -148,14 +148,7 @@ export default function ArticleCard({ article, sessionId }: ArticleCardProps) {
             {formatTimeAgo(article.publishedAt)}
           </span>
           
-          <span>•</span>
-          <Badge 
-            variant="outline" 
-            className="text-xs bg-gray-100 text-gray-600"
-            data-testid={`badge-source-${article.id}`}
-          >
-{article.source}
-          </Badge>
+
         </div>
         
         <h3 
@@ -175,16 +168,16 @@ export default function ArticleCard({ article, sessionId }: ArticleCardProps) {
         
         <div className="flex items-center justify-between">
           <div className="flex items-center space-x-2">
-            <div className="w-6 h-6 bg-gray-300 rounded-full flex items-center justify-center">
-              <span className="text-xs font-bold text-gray-600">
-                {article.author ? article.author[0]?.toUpperCase() : "?"}
+            <div className="w-6 h-6 bg-pride-indigo rounded-full flex items-center justify-center">
+              <span className="text-xs font-bold text-white">
+                {article.source ? article.source[0]?.toUpperCase() : "?"}
               </span>
             </div>
             <span 
               className="text-sm text-gray-600"
-              data-testid={`text-author-${article.id}`}
+              data-testid={`text-source-${article.id}`}
             >
-              {article.author || "Unknown Author"}
+              {article.source || "Unknown Source"}
             </span>
           </div>
           
