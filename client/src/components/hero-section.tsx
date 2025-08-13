@@ -206,16 +206,16 @@ export default function HeroSection({ article }: HeroSectionProps) {
               </div>
               <div className="space-y-4">
                 <div className="border-b border-gray-200 pb-4 last:border-b-0 last:pb-0">
-                  <h4 className="font-semibold text-gray-800 text-sm mb-2">
+                  <h4 className="font-semibold text-red-600 text-sm mb-2">
                     Supreme Court to Hear Landmark LGBTQ+ Case
                   </h4>
-                  <p className="text-xs text-gray-600">15 minutes ago</p>
+                  <p className="text-xs text-red-500">15 minutes ago</p>
                 </div>
                 <div className="border-b border-gray-200 pb-4 last:border-b-0 last:pb-0">
-                  <h4 className="font-semibold text-gray-800 text-sm mb-2">
+                  <h4 className="font-semibold text-red-600 text-sm mb-2">
                     Major Company Announces Trans-Inclusive Policy
                   </h4>
-                  <p className="text-xs text-gray-600">32 minutes ago</p>
+                  <p className="text-xs text-red-500">32 minutes ago</p>
                 </div>
               </div>
             </section>
