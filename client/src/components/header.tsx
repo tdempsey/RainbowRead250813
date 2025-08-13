@@ -4,7 +4,7 @@ import { Input } from "@/components/ui/input";
 import { Search, Bookmark, Menu, Settings } from "lucide-react";
 import { useQuery } from "@tanstack/react-query";
 import { Link } from "wouter";
-import rmLogo from "@assets/rm_logo_1755024192058.png";
+import rmLogo from "@assets/rm_logo01_1755105254709.webp";
 
 interface HeaderProps {
   onSearch: (query: string) => void;
