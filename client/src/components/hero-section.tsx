@@ -199,8 +199,8 @@ export default function HeroSection({ article }: HeroSectionProps) {
             {/* Breaking News */}
             <section className="bg-gray-100 border border-gray-200 rounded-xl p-6 shadow-sm" role="region" aria-label="Breaking News">
               <div className="flex items-center space-x-2 mb-4">
-                <Zap className="text-gray-600" size={20} />
-                <h3 className="text-lg font-bold text-gray-800" data-testid="text-breaking-news-title">
+                <Zap className="text-red-500" size={20} />
+                <h3 className="text-lg font-bold text-red-600" data-testid="text-breaking-news-title">
                   Breaking News
                 </h3>
               </div>
