@@ -1,0 +1,610 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Pride News - LGBTQ+ News & Stories</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <script>
+        tailwind.config = {
+            theme: {
+                extend: {
+                    fontFamily: {
+                        'sans': ['Inter', 'system-ui', 'sans-serif'],
+                    },
+                    colors: {
+                        'pride-indigo': '#6366F1',
+                        'pride-pink': '#EC4899',
+                        'pride-emerald': '#10B981',
+                    }
+                }
+            }
+        };
+    </script>
+</head>
+<body class="bg-gray-50 font-sans">
+    <!-- @COMPONENT: Header [navigation, search, user menu] -->
+    <header class="bg-white shadow-sm sticky top-0 z-50 border-b border-gray-100">
+        <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+            <div class="flex justify-between items-center h-16">
+                <!-- Logo -->
+                <div class="flex items-center space-x-4">
+                    <div class="flex items-center space-x-2">
+                        <div class="w-8 h-8 bg-gradient-to-r from-pride-indigo to-pride-pink rounded-lg flex items-center justify-center">
+                            <i class="fas fa-newspaper text-white text-sm"></i>
+                        </div>
+                        <span class="text-xl font-bold text-gray-900">Pride News</span>
+                    </div>
+                </div>
+
+                <!-- Desktop Navigation -->
+                <nav class="hidden md:flex items-center space-x-8">
+                    <a href="#" class="text-gray-900 font-medium border-b-2 border-pride-indigo pb-4">Latest</a>
+                    <a href="#" class="text-gray-600 hover:text-gray-900 font-medium pb-4 hover:border-b-2 hover:border-gray-300 transition-colors">Politics</a>
+                    <a href="#" class="text-gray-600 hover:text-gray-900 font-medium pb-4 hover:border-b-2 hover:border-gray-300 transition-colors">Culture</a>
+                    <a href="#" class="text-gray-600 hover:text-gray-900 font-medium pb-4 hover:border-b-2 hover:border-gray-300 transition-colors">Health</a>
+                    <a href="#" class="text-gray-600 hover:text-gray-900 font-medium pb-4 hover:border-b-2 hover:border-gray-300 transition-colors">Community</a>
+                </nav>
+
+                <!-- Search and User Menu -->
+                <div class="flex items-center space-x-4">
+                    <!-- Search Icon (Mobile) -->
+                    <button class="md:hidden text-gray-600 hover:text-gray-900">
+                        <i class="fas fa-search"></i>
+                    </button>
+                    
+                    <!-- Search Bar (Desktop) -->
+                    <div class="hidden md:block relative">
+                        <input type="text" placeholder="Search articles..." 
+                               class="w-64 px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-pride-indigo focus:border-transparent" 
+                               data-mock="true">
+                        <button class="absolute right-3 top-2.5 text-gray-400 hover:text-gray-600">
+                            <i class="fas fa-search"></i>
+                        </button>
+                    </div>
+
+                    <!-- User Menu -->
+                    <div class="flex items-center space-x-3">
+                        <button class="text-gray-600 hover:text-gray-900 relative">
+                            <i class="fas fa-bookmark"></i>
+                            <span class="absolute -top-1 -right-1 bg-pride-pink text-white text-xs rounded-full h-4 w-4 flex items-center justify-center" data-mock="true">3</span>
+                        </button>
+                        <button class="md:hidden text-gray-600 hover:text-gray-900">
+                            <i class="fas fa-bars"></i>
+                        </button>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Mobile Search Bar -->
+        <div class="md:hidden px-4 pb-4">
+            <div class="relative">
+                <input type="text" placeholder="Search articles..." 
+                       class="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-pride-indigo focus:border-transparent"
+                       data-mock="true">
+                <button class="absolute right-3 top-2.5 text-gray-400 hover:text-gray-600">
+                    <i class="fas fa-search"></i>
+                </button>
+            </div>
+        </div>
+    </header>
+    <!-- @END_COMPONENT: Header -->
+
+    <!-- @COMPONENT: HeroSection [featured article, breaking news] -->
+    <section class="bg-white border-b border-gray-100">
+        <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
+            <div class="grid grid-cols-1 lg:grid-cols-3 gap-8">
+                <!-- Featured Article -->
+                <div class="lg:col-span-2">
+                    <div class="relative">
+                        <span class="inline-block bg-pride-pink text-white px-3 py-1 rounded-full text-sm font-medium mb-4">Featured</span>
+                        <!-- Historic LGBTQ+ rights march with rainbow flags and diverse crowd -->
+                        <img src="https://images.unsplash.com/photo-1559827260-dc66d52bef19?ixlib=rb-4.0.3&ixid=MnwxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8&auto=format&fit=crop&w=1200&h=600" 
+                             alt="LGBTQ+ rights march with rainbow flags" 
+                             class="w-full h-72 sm:h-96 object-cover rounded-xl shadow-lg">
+                        <div class="mt-6">
+                            <div class="flex items-center space-x-2 text-sm text-gray-500 mb-2">
+                                <span class="bg-blue-100 text-blue-800 px-2 py-1 rounded-full" data-mock="true">Politics</span>
+                                <span class="bg-purple-100 text-purple-800 px-2 py-1 rounded-full" data-mock="true">LGBTQ+ Rights</span>
+                                <span>•</span>
+                                <span data-bind="article.publishedAt">2 hours ago</span>
+                            </div>
+                            <h1 class="text-3xl sm:text-4xl font-bold text-gray-900 mb-4" data-bind="featuredArticle.title">
+                                Historic LGBTQ+ Rights Bill Passes with Bipartisan Support
+                            </h1>
+                            <p class="text-lg text-gray-600 mb-6" data-bind="featuredArticle.excerpt">
+                                Landmark legislation protecting LGBTQ+ individuals from discrimination in employment, housing, and public accommodations receives overwhelming support in historic vote.
+                            </p>
+                            <div class="flex items-center justify-between">
+                                <div class="flex items-center space-x-3">
+                                    <div class="w-8 h-8 bg-gray-300 rounded-full" data-mock-image="true"></div>
+                                    <div>
+                                        <p class="text-sm font-medium text-gray-900" data-bind="article.author.name">Sarah Johnson</p>
+                                        <p class="text-xs text-gray-500" data-bind="article.source">The Pride Tribune</p>
+                                    </div>
+                                </div>
+                                <div class="flex items-center space-x-4">
+                                    <button class="text-gray-400 hover:text-pride-pink transition-colors">
+                                        <i class="fas fa-heart"></i>
+                                    </button>
+                                    <button class="text-gray-400 hover:text-pride-indigo transition-colors">
+                                        <i class="fas fa-bookmark"></i>
+                                    </button>
+                                    <button class="text-gray-400 hover:text-gray-600 transition-colors">
+                                        <i class="fas fa-share"></i>
+                                    </button>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Sidebar: Breaking & Trending -->
+                <div class="space-y-6">
+                    <!-- Breaking News -->
+                    <div class="bg-red-50 border border-red-200 rounded-xl p-6">
+                        <div class="flex items-center space-x-2 mb-4">
+                            <i class="fas fa-bolt text-red-500"></i>
+                            <h3 class="text-lg font-bold text-red-900">Breaking News</h3>
+                        </div>
+                        <div class="space-y-4">
+                            <div class="border-b border-red-200 pb-4 last:border-b-0 last:pb-0" data-mock="true">
+                                <h4 class="font-semibold text-red-900 text-sm mb-2">Supreme Court to Hear Landmark LGBTQ+ Case</h4>
+                                <p class="text-xs text-red-700">15 minutes ago</p>
+                            </div>
+                            <div class="border-b border-red-200 pb-4 last:border-b-0 last:pb-0" data-mock="true">
+                                <h4 class="font-semibold text-red-900 text-sm mb-2">Major Company Announces Trans-Inclusive Policy</h4>
+                                <p class="text-xs text-red-700">32 minutes ago</p>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Trending Topics -->
+                    <div class="bg-white border border-gray-200 rounded-xl p-6">
+                        <h3 class="text-lg font-bold text-gray-900 mb-4">Trending Topics</h3>
+                        <div class="flex flex-wrap gap-2">
+                            <span class="bg-pride-indigo/10 text-pride-indigo px-3 py-1 rounded-full text-sm font-medium" data-mock="true">#PrideMonth</span>
+                            <span class="bg-pride-pink/10 text-pride-pink px-3 py-1 rounded-full text-sm font-medium" data-mock="true">#TransRights</span>
+                            <span class="bg-pride-emerald/10 text-pride-emerald px-3 py-1 rounded-full text-sm font-medium" data-mock="true">#Equality</span>
+                            <span class="bg-purple-100 text-purple-700 px-3 py-1 rounded-full text-sm font-medium" data-mock="true">#LGBTQ+</span>
+                            <span class="bg-blue-100 text-blue-700 px-3 py-1 rounded-full text-sm font-medium" data-mock="true">#Pride2024</span>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section>
+    <!-- @END_COMPONENT: HeroSection -->
+
+    <!-- @COMPONENT: CategoryTabs [content filtering navigation] -->
+    <section class="bg-white border-b border-gray-100">
+        <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+            <div class="flex items-center justify-between py-4">
+                <div class="flex items-center space-x-1 overflow-x-auto pb-2">
+                    <button class="px-4 py-2 bg-pride-indigo text-white rounded-lg font-medium whitespace-nowrap">All Stories</button>
+                    <button class="px-4 py-2 text-gray-600 hover:bg-gray-100 rounded-lg font-medium whitespace-nowrap transition-colors">Politics</button>
+                    <button class="px-4 py-2 text-gray-600 hover:bg-gray-100 rounded-lg font-medium whitespace-nowrap transition-colors">Culture & Arts</button>
+                    <button class="px-4 py-2 text-gray-600 hover:bg-gray-100 rounded-lg font-medium whitespace-nowrap transition-colors">Health & Wellness</button>
+                    <button class="px-4 py-2 text-gray-600 hover:bg-gray-100 rounded-lg font-medium whitespace-nowrap transition-colors">Business</button>
+                    <button class="px-4 py-2 text-gray-600 hover:bg-gray-100 rounded-lg font-medium whitespace-nowrap transition-colors">Community</button>
+                </div>
+                <div class="flex items-center space-x-2">
+                    <button class="text-gray-400 hover:text-gray-600 transition-colors">
+                        <i class="fas fa-filter"></i>
+                    </button>
+                    <select class="text-sm border border-gray-300 rounded-lg px-3 py-1 focus:ring-2 focus:ring-pride-indigo focus:border-transparent" data-mock="true">
+                        <option>Latest</option>
+                        <option>Most Popular</option>
+                        <option>Most Shared</option>
+                    </select>
+                </div>
+            </div>
+        </div>
+    </section>
+    <!-- @END_COMPONENT: CategoryTabs -->
+
+    <!-- @COMPONENT: MainContent [article grid, RSS feed integration] -->
+    <main class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
+        <div class="grid grid-cols-1 lg:grid-cols-4 gap-8">
+            <!-- Article Grid -->
+            <div class="lg:col-span-3">
+                <!-- @MAP: articles.map(article => ( -->
+                <div class="grid grid-cols-1 md:grid-cols-2 gap-6 mb-8">
+                    <!-- Article Card 1 -->
+                    <article class="bg-white border border-gray-200 rounded-xl shadow-sm hover:shadow-md transition-shadow overflow-hidden">
+                        <!-- Diverse group of young LGBTQ+ activists at a community event -->
+                        <img src="https://images.unsplash.com/photo-1573164713714-d95e436ab8d6?ixlib=rb-4.0.3&ixid=MnwxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8&auto=format&fit=crop&w=800&h=400" 
+                             alt="Young LGBTQ+ activists at community event" 
+                             class="w-full h-48 object-cover">
+                        <div class="p-6">
+                            <div class="flex items-center space-x-2 text-sm text-gray-500 mb-3">
+                                <span class="bg-green-100 text-green-800 px-2 py-1 rounded-full" data-mock="true">Community</span>
+                                <span>•</span>
+                                <span data-bind="article.publishedAt">4 hours ago</span>
+                                <span>•</span>
+                                <span class="text-xs bg-gray-100 text-gray-600 px-2 py-1 rounded-full" data-bind="article.source">RSS: GLAAD Media</span>
+                            </div>
+                            <h3 class="text-xl font-bold text-gray-900 mb-3 line-clamp-2" data-bind="article.title">
+                                Young LGBTQ+ Activists Launch New Community Initiative
+                            </h3>
+                            <p class="text-gray-600 mb-4 line-clamp-3" data-bind="article.excerpt">
+                                A group of passionate young activists announces a groundbreaking community program designed to support LGBTQ+ youth through mentorship and resources.
+                            </p>
+                            <div class="flex items-center justify-between">
+                                <div class="flex items-center space-x-2">
+                                    <div class="w-6 h-6 bg-gray-300 rounded-full" data-mock-image="true"></div>
+                                    <span class="text-sm text-gray-600" data-bind="article.author.name">Alex Rivera</span>
+                                </div>
+                                <div class="flex items-center space-x-3">
+                                    <button class="text-gray-400 hover:text-pride-pink transition-colors text-sm">
+                                        <i class="fas fa-heart"></i> <span data-mock="true">24</span>
+                                    </button>
+                                    <button class="text-gray-400 hover:text-pride-indigo transition-colors text-sm">
+                                        <i class="fas fa-bookmark"></i>
+                                    </button>
+                                </div>
+                            </div>
+                        </div>
+                    </article>
+
+                    <!-- Article Card 2 -->
+                    <article class="bg-white border border-gray-200 rounded-xl shadow-sm hover:shadow-md transition-shadow overflow-hidden">
+                        <!-- Corporate office building with pride flag displayed prominently -->
+                        <img src="https://images.unsplash.com/photo-1486406146926-c627a92ad1ab?ixlib=rb-4.0.3&ixid=MnwxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8&auto=format&fit=crop&w=800&h=400" 
+                             alt="Corporate office with pride flag" 
+                             class="w-full h-48 object-cover">
+                        <div class="p-6">
+                            <div class="flex items-center space-x-2 text-sm text-gray-500 mb-3">
+                                <span class="bg-blue-100 text-blue-800 px-2 py-1 rounded-full" data-mock="true">Business</span>
+                                <span>•</span>
+                                <span data-bind="article.publishedAt">6 hours ago</span>
+                                <span>•</span>
+                                <span class="text-xs bg-gray-100 text-gray-600 px-2 py-1 rounded-full" data-bind="article.source">NewsAPI</span>
+                            </div>
+                            <h3 class="text-xl font-bold text-gray-900 mb-3 line-clamp-2" data-bind="article.title">
+                                Fortune 500 Companies Expand LGBTQ+ Benefits
+                            </h3>
+                            <p class="text-gray-600 mb-4 line-clamp-3" data-bind="article.excerpt">
+                                Major corporations announce comprehensive new benefit packages specifically designed to support LGBTQ+ employees and their families.
+                            </p>
+                            <div class="flex items-center justify-between">
+                                <div class="flex items-center space-x-2">
+                                    <div class="w-6 h-6 bg-gray-300 rounded-full" data-mock-image="true"></div>
+                                    <span class="text-sm text-gray-600" data-bind="article.author.name">Jordan Kim</span>
+                                </div>
+                                <div class="flex items-center space-x-3">
+                                    <button class="text-gray-400 hover:text-pride-pink transition-colors text-sm">
+                                        <i class="fas fa-heart"></i> <span data-mock="true">42</span>
+                                    </button>
+                                    <button class="text-gray-400 hover:text-pride-indigo transition-colors text-sm">
+                                        <i class="fas fa-bookmark"></i>
+                                    </button>
+                                </div>
+                            </div>
+                        </div>
+                    </article>
+
+                    <!-- Article Card 3 -->
+                    <article class="bg-white border border-gray-200 rounded-xl shadow-sm hover:shadow-md transition-shadow overflow-hidden">
+                        <!-- Art gallery with vibrant LGBTQ+ themed artwork and diverse visitors -->
+                        <img src="https://images.unsplash.com/photo-1578662996442-48f60103fc96?ixlib=rb-4.0.3&ixid=MnwxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8&auto=format&fit=crop&w=800&h=400" 
+                             alt="Art gallery with LGBTQ+ themed artwork" 
+                             class="w-full h-48 object-cover">
+                        <div class="p-6">
+                            <div class="flex items-center space-x-2 text-sm text-gray-500 mb-3">
+                                <span class="bg-purple-100 text-purple-800 px-2 py-1 rounded-full" data-mock="true">Culture</span>
+                                <span>•</span>
+                                <span data-bind="article.publishedAt">8 hours ago</span>
+                                <span>•</span>
+                                <span class="text-xs bg-gray-100 text-gray-600 px-2 py-1 rounded-full" data-bind="article.source">RSS: Queerty</span>
+                            </div>
+                            <h3 class="text-xl font-bold text-gray-900 mb-3 line-clamp-2" data-bind="article.title">
+                                Groundbreaking LGBTQ+ Art Exhibition Opens
+                            </h3>
+                            <p class="text-gray-600 mb-4 line-clamp-3" data-bind="article.excerpt">
+                                A revolutionary new art exhibition showcasing the works of LGBTQ+ artists from around the world opens to critical acclaim and record attendance.
+                            </p>
+                            <div class="flex items-center justify-between">
+                                <div class="flex items-center space-x-2">
+                                    <div class="w-6 h-6 bg-gray-300 rounded-full" data-mock-image="true"></div>
+                                    <span class="text-sm text-gray-600" data-bind="article.author.name">Maya Patel</span>
+                                </div>
+                                <div class="flex items-center space-x-3">
+                                    <button class="text-gray-400 hover:text-pride-pink transition-colors text-sm">
+                                        <i class="fas fa-heart"></i> <span data-mock="true">67</span>
+                                    </button>
+                                    <button class="text-gray-400 hover:text-pride-indigo transition-colors text-sm">
+                                        <i class="fas fa-bookmark"></i>
+                                    </button>
+                                </div>
+                            </div>
+                        </div>
+                    </article>
+
+                    <!-- Article Card 4 -->
+                    <article class="bg-white border border-gray-200 rounded-xl shadow-sm hover:shadow-md transition-shadow overflow-hidden">
+                        <!-- Healthcare professional in consultation with diverse LGBTQ+ patient -->
+                        <img src="https://images.unsplash.com/photo-1559757148-5c350d0d3c56?ixlib=rb-4.0.3&ixid=MnwxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8&auto=format&fit=crop&w=800&h=400" 
+                             alt="Healthcare consultation focusing on inclusive care" 
+                             class="w-full h-48 object-cover">
+                        <div class="p-6">
+                            <div class="flex items-center space-x-2 text-sm text-gray-500 mb-3">
+                                <span class="bg-emerald-100 text-emerald-800 px-2 py-1 rounded-full" data-mock="true">Health</span>
+                                <span>•</span>
+                                <span data-bind="article.publishedAt">10 hours ago</span>
+                                <span>•</span>
+                                <span class="text-xs bg-gray-100 text-gray-600 px-2 py-1 rounded-full" data-bind="article.source">RSS: Out Magazine</span>
+                            </div>
+                            <h3 class="text-xl font-bold text-gray-900 mb-3 line-clamp-2" data-bind="article.title">
+                                New Study Shows Improved LGBTQ+ Healthcare Access
+                            </h3>
+                            <p class="text-gray-600 mb-4 line-clamp-3" data-bind="article.excerpt">
+                                Comprehensive research reveals significant improvements in healthcare accessibility and quality for LGBTQ+ patients across major metropolitan areas.
+                            </p>
+                            <div class="flex items-center justify-between">
+                                <div class="flex items-center space-x-2">
+                                    <div class="w-6 h-6 bg-gray-300 rounded-full" data-mock-image="true"></div>
+                                    <span class="text-sm text-gray-600" data-bind="article.author.name">Dr. Chris Wong</span>
+                                </div>
+                                <div class="flex items-center space-x-3">
+                                    <button class="text-gray-400 hover:text-pride-pink transition-colors text-sm">
+                                        <i class="fas fa-heart"></i> <span data-mock="true">89</span>
+                                    </button>
+                                    <button class="text-gray-400 hover:text-pride-indigo transition-colors text-sm">
+                                        <i class="fas fa-bookmark"></i>
+                                    </button>
+                                </div>
+                            </div>
+                        </div>
+                    </article>
+                </div>
+                <!-- @END_MAP )) -->
+
+                <!-- Load More Button -->
+                <div class="text-center py-8">
+                    <button class="bg-pride-indigo text-white px-8 py-3 rounded-lg font-semibold hover:bg-indigo-700 transition-colors" data-event="click:loadMoreArticles">
+                        Load More Articles
+                    </button>
+                </div>
+            </div>
+
+            <!-- Sidebar -->
+            <div class="lg:col-span-1 space-y-6">
+                <!-- Newsletter Signup -->
+                <div class="bg-gradient-to-br from-pride-indigo to-pride-pink rounded-xl p-6 text-white">
+                    <h3 class="text-lg font-bold mb-2">Stay Informed</h3>
+                    <p class="text-sm opacity-90 mb-4">Get daily LGBTQ+ news delivered to your inbox</p>
+                    <div class="space-y-3">
+                        <input type="email" placeholder="Your email address" 
+                               class="w-full px-4 py-2 rounded-lg text-gray-900 placeholder-gray-500 focus:ring-2 focus:ring-white focus:ring-opacity-50"
+                               data-mock="true">
+                        <button class="w-full bg-white text-pride-indigo px-4 py-2 rounded-lg font-semibold hover:bg-gray-100 transition-colors"
+                                data-event="click:subscribeNewsletter">
+                            Subscribe
+                        </button>
+                    </div>
+                </div>
+
+                <!-- Popular Tags -->
+                <div class="bg-white border border-gray-200 rounded-xl p-6">
+                    <h3 class="text-lg font-bold text-gray-900 mb-4">Popular Tags</h3>
+                    <div class="flex flex-wrap gap-2">
+                        <!-- @FUNCTIONALITY: Tags should be clickable and filter content -->
+                        <button class="bg-pride-indigo/10 text-pride-indigo px-3 py-1 rounded-full text-sm font-medium hover:bg-pride-indigo/20 transition-colors" data-mock="true">#TransRights</button>
+                        <button class="bg-pride-pink/10 text-pride-pink px-3 py-1 rounded-full text-sm font-medium hover:bg-pride-pink/20 transition-colors" data-mock="true">#Marriage</button>
+                        <button class="bg-pride-emerald/10 text-pride-emerald px-3 py-1 rounded-full text-sm font-medium hover:bg-pride-emerald/20 transition-colors" data-mock="true">#Workplace</button>
+                        <button class="bg-purple-100 text-purple-700 px-3 py-1 rounded-full text-sm font-medium hover:bg-purple-200 transition-colors" data-mock="true">#Youth</button>
+                        <button class="bg-blue-100 text-blue-700 px-3 py-1 rounded-full text-sm font-medium hover:bg-blue-200 transition-colors" data-mock="true">#Health</button>
+                        <button class="bg-orange-100 text-orange-700 px-3 py-1 rounded-full text-sm font-medium hover:bg-orange-200 transition-colors" data-mock="true">#Politics</button>
+                    </div>
+                </div>
+
+                <!-- RSS Sources -->
+                <div class="bg-white border border-gray-200 rounded-xl p-6">
+                    <h3 class="text-lg font-bold text-gray-900 mb-4">Our Sources</h3>
+                    <div class="space-y-3">
+                        <!-- @FUNCTIONALITY: RSS source integration status indicators -->
+                        <div class="flex items-center justify-between" data-mock="true">
+                            <div class="flex items-center space-x-2">
+                                <div class="w-2 h-2 bg-green-500 rounded-full"></div>
+                                <span class="text-sm text-gray-700">GLAAD Media</span>
+                            </div>
+                            <span class="text-xs text-gray-500">Active</span>
+                        </div>
+                        <div class="flex items-center justify-between" data-mock="true">
+                            <div class="flex items-center space-x-2">
+                                <div class="w-2 h-2 bg-green-500 rounded-full"></div>
+                                <span class="text-sm text-gray-700">Out Magazine</span>
+                            </div>
+                            <span class="text-xs text-gray-500">Active</span>
+                        </div>
+                        <div class="flex items-center justify-between" data-mock="true">
+                            <div class="flex items-center space-x-2">
+                                <div class="w-2 h-2 bg-green-500 rounded-full"></div>
+                                <span class="text-sm text-gray-700">Queerty</span>
+                            </div>
+                            <span class="text-xs text-gray-500">Active</span>
+                        </div>
+                        <div class="flex items-center justify-between" data-mock="true">
+                            <div class="flex items-center space-x-2">
+                                <div class="w-2 h-2 bg-green-500 rounded-full"></div>
+                                <span class="text-sm text-gray-700">NewsAPI</span>
+                            </div>
+                            <span class="text-xs text-gray-500">Active</span>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Featured Community -->
+                <div class="bg-white border border-gray-200 rounded-xl p-6">
+                    <h3 class="text-lg font-bold text-gray-900 mb-4">Community Spotlight</h3>
+                    <!-- Group of diverse LGBTQ+ community members at a local organization -->
+                    <img src="https://images.unsplash.com/photo-1529156069898-49953e39b3ac?ixlib=rb-4.0.3&ixid=MnwxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8&auto=format&fit=crop&w=400&h=200" 
+                         alt="Diverse LGBTQ+ community group" 
+                         class="w-full h-32 object-cover rounded-lg mb-3">
+                    <h4 class="font-semibold text-gray-900 mb-2" data-mock="true">Pride Center Northwest</h4>
+                    <p class="text-sm text-gray-600 mb-3" data-mock="true">Supporting LGBTQ+ individuals and families in the Pacific Northwest through advocacy, resources, and community.</p>
+                    <button class="text-pride-indigo font-medium text-sm hover:underline">Learn More →</button>
+                </div>
+            </div>
+        </div>
+    </main>
+    <!-- @END_COMPONENT: MainContent -->
+
+    <!-- @COMPONENT: Footer [links, social media, subscription] -->
+    <footer class="bg-gray-900 text-white">
+        <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-12">
+            <div class="grid grid-cols-1 md:grid-cols-4 gap-8">
+                <!-- Logo and Description -->
+                <div class="space-y-4">
+                    <div class="flex items-center space-x-2">
+                        <div class="w-8 h-8 bg-gradient-to-r from-pride-indigo to-pride-pink rounded-lg flex items-center justify-center">
+                            <i class="fas fa-newspaper text-white text-sm"></i>
+                        </div>
+                        <span class="text-xl font-bold">Pride News</span>
+                    </div>
+                    <p class="text-gray-400 text-sm">
+                        Your trusted source for LGBTQ+ news, stories, and community updates. 
+                        Amplifying diverse voices and promoting equality.
+                    </p>
+                    <div class="flex space-x-4">
+                        <a href="#" class="text-gray-400 hover:text-white transition-colors">
+                            <i class="fab fa-twitter"></i>
+                        </a>
+                        <a href="#" class="text-gray-400 hover:text-white transition-colors">
+                            <i class="fab fa-facebook"></i>
+                        </a>
+                        <a href="#" class="text-gray-400 hover:text-white transition-colors">
+                            <i class="fab fa-instagram"></i>
+                        </a>
+                        <a href="#" class="text-gray-400 hover:text-white transition-colors">
+                            <i class="fab fa-youtube"></i>
+                        </a>
+                    </div>
+                </div>
+
+                <!-- Categories -->
+                <div>
+                    <h4 class="text-lg font-semibold mb-4">Categories</h4>
+                    <ul class="space-y-2 text-sm">
+                        <li><a href="#" class="text-gray-400 hover:text-white transition-colors">Politics</a></li>
+                        <li><a href="#" class="text-gray-400 hover:text-white transition-colors">Culture & Arts</a></li>
+                        <li><a href="#" class="text-gray-400 hover:text-white transition-colors">Health & Wellness</a></li>
+                        <li><a href="#" class="text-gray-400 hover:text-white transition-colors">Business</a></li>
+                        <li><a href="#" class="text-gray-400 hover:text-white transition-colors">Community</a></li>
+                    </ul>
+                </div>
+
+                <!-- Resources -->
+                <div>
+                    <h4 class="text-lg font-semibold mb-4">Resources</h4>
+                    <ul class="space-y-2 text-sm">
+                        <li><a href="#" class="text-gray-400 hover:text-white transition-colors">About Us</a></li>
+                        <li><a href="#" class="text-gray-400 hover:text-white transition-colors">Contact</a></li>
+                        <li><a href="#" class="text-gray-400 hover:text-white transition-colors">Privacy Policy</a></li>
+                        <li><a href="#" class="text-gray-400 hover:text-white transition-colors">Terms of Service</a></li>
+                        <li><a href="#" class="text-gray-400 hover:text-white transition-colors">RSS Feeds</a></li>
+                    </ul>
+                </div>
+
+                <!-- Newsletter -->
+                <div>
+                    <h4 class="text-lg font-semibold mb-4">Stay Updated</h4>
+                    <p class="text-gray-400 text-sm mb-4">Get the latest LGBTQ+ news and updates.</p>
+                    <div class="space-y-2">
+                        <input type="email" placeholder="Email address" 
+                               class="w-full px-3 py-2 bg-gray-800 border border-gray-700 rounded-lg text-white placeholder-gray-400 focus:ring-2 focus:ring-pride-indigo focus:border-transparent"
+                               data-mock="true">
+                        <button class="w-full bg-pride-indigo text-white px-3 py-2 rounded-lg font-medium hover:bg-indigo-700 transition-colors"
+                                data-event="click:subscribeNewsletter">
+                            Subscribe
+                        </button>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Bottom Footer -->
+            <div class="border-t border-gray-800 mt-8 pt-8 flex flex-col sm:flex-row justify-between items-center">
+                <p class="text-gray-400 text-sm">
+                    © 2024 Pride News. All rights reserved. Built with ❤️ for the LGBTQ+ community.
+                </p>
+                <div class="flex items-center space-x-4 mt-4 sm:mt-0">
+                    <span class="text-xs text-gray-500">Powered by RSS & NewsAPI</span>
+                    <div class="flex items-center space-x-1">
+                        <div class="w-2 h-2 bg-green-500 rounded-full"></div>
+                        <span class="text-xs text-gray-400">All systems operational</span>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </footer>
+    <!-- @END_COMPONENT: Footer -->
+
+    <!-- @STATE: searchQuery:string = '' -->
+    <!-- @STATE: selectedCategory:string = 'all' -->
+    <!-- @STATE: articles:array = [] -->
+    <!-- @STATE: loading:boolean = false -->
+
+    <script>
+        // TODO: Implement business logic, API calls, and state management
+        
+        (function() {
+            // Mobile menu toggle functionality
+            const mobileMenuButton = document.querySelector('.fa-bars').parentElement;
+            const mobileSearch = document.querySelector('.md\\:hidden .relative input');
+            
+            // Search functionality placeholder
+            const searchInputs = document.querySelectorAll('input[placeholder*="Search"]');
+            searchInputs.forEach(input => {
+                input.addEventListener('focus', function() {
+                    // TODO: Implement full-text search with indexing
+                    console.log('Search functionality to be implemented');
+                });
+            });
+
+            // Category filter functionality
+            const categoryButtons = document.querySelectorAll('button[class*="px-4 py-2"]');
+            categoryButtons.forEach(button => {
+                button.addEventListener('click', function() {
+                    // TODO: Implement category filtering with RSS feed integration
+                    console.log('Category filter:', this.textContent);
+                });
+            });
+
+            // Tag click functionality
+            const tagButtons = document.querySelectorAll('button[class*="rounded-full"]');
+            tagButtons.forEach(button => {
+                button.addEventListener('click', function() {
+                    // TODO: Implement tag-based content filtering
+                    console.log('Tag filter:', this.textContent);
+                });
+            });
+
+            // Article interaction tracking
+            const heartButtons = document.querySelectorAll('.fa-heart');
+            const bookmarkButtons = document.querySelectorAll('.fa-bookmark');
+            
+            heartButtons.forEach(button => {
+                button.addEventListener('click', function() {
+                    // TODO: Implement article liking functionality
+                    this.classList.toggle('text-pride-pink');
+                    console.log('Article liked/unliked');
+                });
+            });
+
+            bookmarkButtons.forEach(button => {
+                button.addEventListener('click', function() {
+                    // TODO: Implement article bookmarking functionality
+                    this.classList.toggle('text-pride-indigo');
+                    console.log('Article bookmarked/unbookmarked');
+                });
+            });
+        })();
+    </script>
+</body>
+</html>
