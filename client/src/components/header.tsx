@@ -1,24 +1,21 @@
 import { useState } from "react";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
-import { Search, Bookmark, Menu, Settings } from "lucide-react";
-import { useQuery } from "@tanstack/react-query";
+import { Search, Menu, Settings } from "lucide-react";
+
 import { Link } from "wouter";
 import rmLogo from "@assets/rm_logo01_1755105254709.webp";
 
 interface HeaderProps {
   onSearch: (query: string) => void;
   searchQuery: string;
-  sessionId: string;
 }
 
-export default function Header({ onSearch, searchQuery, sessionId }: HeaderProps) {
+export default function Header({ onSearch, searchQuery }: HeaderProps) {
   const [searchInput, setSearchInput] = useState(searchQuery);
   const [showMobileSearch, setShowMobileSearch] = useState(false);
 
-  const { data: bookmarks = [] } = useQuery({
-    queryKey: ["/api/bookmarks", { sessionId }],
-  });
+
 
 
 
@@ -108,23 +105,7 @@ export default function Header({ onSearch, searchQuery, sessionId }: HeaderProps
               </Button>
             </Link>
 
-            {/* Bookmark Button */}
-            <Button
-              variant="ghost"
-              size="sm"
-              className="text-gray-600 hover:text-gray-900 relative"
-              data-testid="button-bookmarks"
-            >
-              <Bookmark size={20} />
-              {(bookmarks as any[]).length > 0 && (
-                <span 
-                  className="absolute -top-1 -right-1 bg-pride-pink text-white text-xs rounded-full h-4 w-4 flex items-center justify-center"
-                  data-testid="text-bookmark-count"
-                >
-                  {(bookmarks as any[]).length}
-                </span>
-              )}
-            </Button>
+
 
             {/* Mobile Menu */}
             <Button

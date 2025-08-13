@@ -59,7 +59,6 @@ export default function Home() {
       <Header 
         onSearch={handleSearch} 
         searchQuery={searchQuery}
-        sessionId={sessionId}
       />
       
       {/* Category Navigation */}
