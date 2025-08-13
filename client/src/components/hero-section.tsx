@@ -197,38 +197,27 @@ export default function HeroSection({ article }: HeroSectionProps) {
           {/* Sidebar: Breaking & Trending */}
           <div className="space-y-6">
             {/* Breaking News */}
-            <section className="breaking breaking--subtle" role="region" aria-label="Breaking News">
-              <span className="pill" aria-hidden="true">
-                ⚡ Breaking News
-              </span>
-              <ul className="breaking-list">
-                <li>
-                  <time dateTime="PT15M">15m</time>
-                  <a 
-                    href="#" 
-                    onClick={(e) => {
-                      e.preventDefault();
-                      // Could link to actual breaking news articles
-                    }}
-                    data-testid="link-breaking-news-1"
-                  >
+            <section className="bg-gray-100 border border-gray-200 rounded-xl p-6 shadow-sm" role="region" aria-label="Breaking News">
+              <div className="flex items-center space-x-2 mb-4">
+                <Zap className="text-gray-600" size={20} />
+                <h3 className="text-lg font-bold text-gray-800" data-testid="text-breaking-news-title">
+                  Breaking News
+                </h3>
+              </div>
+              <div className="space-y-4">
+                <div className="border-b border-gray-200 pb-4 last:border-b-0 last:pb-0">
+                  <h4 className="font-semibold text-gray-800 text-sm mb-2">
                     Supreme Court to Hear Landmark LGBTQ+ Case
-                  </a>
-                </li>
-                <li>
-                  <time dateTime="PT32M">32m</time>
-                  <a 
-                    href="#" 
-                    onClick={(e) => {
-                      e.preventDefault();
-                      // Could link to actual breaking news articles
-                    }}
-                    data-testid="link-breaking-news-2"
-                  >
+                  </h4>
+                  <p className="text-xs text-gray-600">15 minutes ago</p>
+                </div>
+                <div className="border-b border-gray-200 pb-4 last:border-b-0 last:pb-0">
+                  <h4 className="font-semibold text-gray-800 text-sm mb-2">
                     Major Company Announces Trans-Inclusive Policy
-                  </a>
-                </li>
-              </ul>
+                  </h4>
+                  <p className="text-xs text-gray-600">32 minutes ago</p>
+                </div>
+              </div>
             </section>
 
             {/* Trending Topics */}
