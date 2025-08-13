@@ -11,6 +11,7 @@ import { Switch } from "@/components/ui/switch";
 import { Trash2, Plus, RefreshCw, Settings, Rss, BarChart3, GripVertical, ArrowUp, ArrowDown, Star, TrendingUp, Edit, MoveUp, MoveDown, Target, EyeOff, Eye } from "lucide-react";
 import { queryClient } from "@/lib/queryClient";
 import { useToast } from "@/hooks/use-toast";
+import Footer from "@/components/footer";
 import type { RssSource, Article } from "@shared/schema";
 
 export default function AdminPanel() {
@@ -1052,6 +1053,7 @@ export default function AdminPanel() {
           </TabsContent>
         </Tabs>
       </div>
+      <Footer />
     </div>
   );
 }
