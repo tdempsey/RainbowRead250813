@@ -8,7 +8,7 @@ import { Badge } from "@/components/ui/badge";
 import { Label } from "@/components/ui/label";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 import { Switch } from "@/components/ui/switch";
-import { Trash2, Plus, RefreshCw, Settings, Rss, BarChart3, GripVertical, ArrowUp, ArrowDown, Star, TrendingUp, Edit, MoveUp, MoveDown, Target, EyeOff, Eye } from "lucide-react";
+import { Trash2, Plus, RefreshCw, Settings, Rss, BarChart3, GripVertical, ArrowUp, ArrowDown, Star, TrendingUp, Edit, MoveUp, MoveDown, Target, EyeOff, Eye, Search } from "lucide-react";
 import { queryClient } from "@/lib/queryClient";
 import { useToast } from "@/hooks/use-toast";
 import Footer from "@/components/footer";
@@ -35,6 +35,9 @@ export default function AdminPanel() {
   // Advanced story placement controls
   const [editingRank, setEditingRank] = useState<{ articleId: string; currentRank: number } | null>(null);
   const [customRankScore, setCustomRankScore] = useState<number>(100);
+
+  // Settings page filtering
+  const [settingsKeywordFilter, setSettingsKeywordFilter] = useState<string>("");
 
   // Queries
   const { data: sources = [] } = useQuery<RssSource[]>({
@@ -357,6 +360,22 @@ export default function AdminPanel() {
     queryKey: ["/api/articles", { includeHidden: true }],
     queryFn: () => fetch("/api/articles?includeHidden=true").then(res => res.json()),
   });
+
+  // Filter articles in settings based on keyword
+  const filteredSettingsArticles = settingsKeywordFilter.trim()
+    ? allArticles.filter(article => {
+        const searchText = settingsKeywordFilter.toLowerCase().trim();
+        return (
+          article.title.toLowerCase().includes(searchText) ||
+          article.excerpt.toLowerCase().includes(searchText) ||
+          article.content.toLowerCase().includes(searchText) ||
+          article.source.toLowerCase().includes(searchText) ||
+          article.author.toLowerCase().includes(searchText) ||
+          article.category.toLowerCase().includes(searchText) ||
+          article.tags.some(tag => tag.toLowerCase().includes(searchText))
+        );
+      })
+    : allArticles;
 
   // Statistics
   const stats = {
@@ -994,8 +1013,37 @@ export default function AdminPanel() {
                 </CardDescription>
               </CardHeader>
               <CardContent>
+                {/* Filter Section */}
+                <div className="mb-6 p-4 bg-gray-50 rounded-lg">
+                  <div className="flex items-center gap-3">
+                    <Search className="h-4 w-4 text-gray-500" />
+                    <Input
+                      placeholder="Search articles by title, content, source, or tags..."
+                      value={settingsKeywordFilter}
+                      onChange={(e) => setSettingsKeywordFilter(e.target.value)}
+                      className="max-w-md"
+                      data-testid="input-settings-filter"
+                    />
+                    {settingsKeywordFilter && (
+                      <Button
+                        variant="outline"
+                        size="sm"
+                        onClick={() => setSettingsKeywordFilter("")}
+                        data-testid="button-clear-filter"
+                      >
+                        Clear
+                      </Button>
+                    )}
+                  </div>
+                  {settingsKeywordFilter && (
+                    <p className="text-xs text-gray-500 mt-2">
+                      Filtering articles containing "{settingsKeywordFilter}" ({filteredSettingsArticles.length} of {allArticles.length} articles)
+                    </p>
+                  )}
+                </div>
+
                 <div className="space-y-4">
-                  {allArticles.map((article) => (
+                  {filteredSettingsArticles.map((article) => (
                     <div key={article.id} className="p-4 border rounded-lg bg-white relative">
                       {/* Status Badges */}
                       <div className="absolute top-2 right-2 flex gap-1">
@@ -1081,9 +1129,15 @@ export default function AdminPanel() {
                     </div>
                   ))}
                   
-                  {allArticles.length === 0 && (
+                  {filteredSettingsArticles.length === 0 && allArticles.length === 0 && (
                     <div className="text-center text-gray-500 py-8">
                       No articles available for management
+                    </div>
+                  )}
+                  
+                  {filteredSettingsArticles.length === 0 && allArticles.length > 0 && settingsKeywordFilter && (
+                    <div className="text-center text-gray-500 py-8">
+                      No articles match your search criteria. Try different keywords or clear the filter.
                     </div>
                   )}
                 </div>
