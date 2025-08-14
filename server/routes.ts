@@ -8,6 +8,38 @@ import { searchParamsSchema, insertBookmarkSchema } from "@shared/schema";
 import { loadDummyData } from "./dummy-data";
 import { z } from "zod";
 
+// Helper functions for HTML metadata extraction
+function extractTitle(html: string): string | null {
+  const titleMatch = html.match(/<title[^>]*>([^<]*)<\/title>/i);
+  if (titleMatch) return titleMatch[1].trim();
+  
+  const ogTitleMatch = html.match(/<meta[^>]*property=['"']og:title['"'][^>]*content=['"']([^'"]*)['"'][^>]*>/i);
+  if (ogTitleMatch) return ogTitleMatch[1].trim();
+  
+  return null;
+}
+
+function extractDescription(html: string): string | null {
+  const ogDescMatch = html.match(/<meta[^>]*property=['"']og:description['"'][^>]*content=['"']([^'"]*)['"'][^>]*>/i);
+  if (ogDescMatch) return ogDescMatch[1].trim();
+  
+  const descMatch = html.match(/<meta[^>]*name=['"']description['"'][^>]*content=['"']([^'"]*)['"'][^>]*>/i);
+  if (descMatch) return descMatch[1].trim();
+  
+  return null;
+}
+
+function extractImage(html: string, baseUrl: string): string | undefined {
+  const ogImageMatch = html.match(/<meta[^>]*property=['"']og:image['"'][^>]*content=['"']([^'"]*)['"'][^>]*>/i);
+  if (ogImageMatch) {
+    const imageUrl = ogImageMatch[1].trim();
+    // Handle relative URLs
+    return imageUrl.startsWith('http') ? imageUrl : new URL(imageUrl, baseUrl).href;
+  }
+  
+  return undefined;
+}
+
 export async function registerRoutes(app: Express): Promise<Server> {
   // Load dummy data automatically on startup
   await loadDummyData();
@@ -364,6 +396,65 @@ export async function registerRoutes(app: Express): Promise<Server> {
     } catch (error) {
       console.error('Error deleting article:', error);
       res.status(500).json({ message: "Failed to delete article" });
+    }
+  });
+
+  // Manual article addition by URL
+  app.post("/api/articles/manual", async (req, res) => {
+    try {
+      const { url, category, isLgbtqFocused } = req.body;
+
+      if (!url) {
+        return res.status(400).json({ message: "URL is required" });
+      }
+
+      // Validate URL format
+      try {
+        new URL(url);
+      } catch {
+        return res.status(400).json({ message: "Invalid URL format" });
+      }
+
+      // Check if article already exists
+      const existingArticles = await storage.getArticles();
+      const exists = existingArticles.some(a => a.url === url);
+      if (exists) {
+        return res.status(409).json({ message: "Article with this URL already exists" });
+      }
+
+      // Fetch article content
+      const response = await fetch(url);
+      if (!response.ok) {
+        return res.status(400).json({ message: "Failed to fetch article content" });
+      }
+
+      const html = await response.text();
+      
+      // Extract basic metadata from HTML
+      const title = extractTitle(html) || new URL(url).pathname.split('/').pop() || 'Untitled';
+      const excerpt = extractDescription(html) || 'No description available';
+      const imageUrl = extractImage(html, url);
+      
+      const article = {
+        title,
+        excerpt,
+        content: excerpt, // Use excerpt as content for now
+        url,
+        imageUrl,
+        category: category || 'news',
+        tags: isLgbtqFocused ? ['lgbtq+'] : [],
+        author: new URL(url).hostname,
+        source: new URL(url).hostname,
+        sourceType: 'manual' as const,
+        publishedAt: new Date(),
+        isLgbtqFocused: isLgbtqFocused || false,
+      };
+
+      const createdArticle = await storage.createArticle(article);
+      res.status(201).json(createdArticle);
+    } catch (error) {
+      console.error('Error creating manual article:', error);
+      res.status(500).json({ message: "Failed to create article" });
     }
   });
 

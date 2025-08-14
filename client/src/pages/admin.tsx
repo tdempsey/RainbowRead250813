@@ -39,6 +39,13 @@ export default function AdminPanel() {
   // Settings page filtering
   const [settingsKeywordFilter, setSettingsKeywordFilter] = useState<string>("");
 
+  // Manual article addition
+  const [newArticle, setNewArticle] = useState({
+    url: "",
+    category: "news",
+    isLgbtqFocused: false,
+  });
+
   // Queries
   const { data: sources = [] } = useQuery<RssSource[]>({
     queryKey: ["/api/sources"],
@@ -161,6 +168,34 @@ export default function AdminPanel() {
     },
   });
 
+  // Manual article mutation
+  const addArticleMutation = useMutation({
+    mutationFn: async (articleData: typeof newArticle) => {
+      const response = await fetch("/api/articles/manual", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify(articleData),
+      });
+      if (!response.ok) {
+        const error = await response.json();
+        throw new Error(error.message || "Failed to add article");
+      }
+      return response.json();
+    },
+    onSuccess: () => {
+      toast({ title: "Success", description: "Article added successfully" });
+      queryClient.invalidateQueries({ queryKey: ["/api/articles"] });
+      setNewArticle({ url: "", category: "news", isLgbtqFocused: false });
+    },
+    onError: (error: any) => {
+      toast({ 
+        title: "Error", 
+        description: error.message || "Failed to add article", 
+        variant: "destructive" 
+      });
+    },
+  });
+
   const handleAddSource = (e: React.FormEvent) => {
     e.preventDefault();
     if (!newSource.name || !newSource.url) return;
@@ -171,6 +206,12 @@ export default function AdminPanel() {
     e.preventDefault();
     if (!newCategory.name || !newCategory.slug) return;
     addCategoryMutation.mutate(newCategory);
+  };
+
+  const handleAddArticle = (e: React.FormEvent) => {
+    e.preventDefault();
+    if (!newArticle.url) return;
+    addArticleMutation.mutate(newArticle);
   };
 
   // Auto-generate slug from name
@@ -637,6 +678,75 @@ export default function AdminPanel() {
 
           {/* Articles Tab */}
           <TabsContent value="articles" className="space-y-6">
+            {/* Add Manual Article */}
+            <Card>
+              <CardHeader>
+                <CardTitle className="flex items-center gap-2">
+                  <Plus size={20} />
+                  Add Article by URL
+                </CardTitle>
+                <CardDescription>
+                  Manually add a specific article by providing its URL
+                </CardDescription>
+              </CardHeader>
+              <CardContent>
+                <form onSubmit={handleAddArticle} className="space-y-4">
+                  <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
+                    <div className="space-y-2 md:col-span-2">
+                      <Label htmlFor="article-url">Article URL</Label>
+                      <Input
+                        id="article-url"
+                        type="url"
+                        placeholder="https://example.com/article"
+                        value={newArticle.url}
+                        onChange={(e) => setNewArticle({ ...newArticle, url: e.target.value })}
+                        data-testid="input-article-url"
+                      />
+                    </div>
+
+                    <div className="space-y-2">
+                      <Label htmlFor="article-category">Category</Label>
+                      <Select 
+                        value={newArticle.category} 
+                        onValueChange={(value) => setNewArticle({ ...newArticle, category: value })}
+                      >
+                        <SelectTrigger data-testid="select-article-category">
+                          <SelectValue />
+                        </SelectTrigger>
+                        <SelectContent>
+                          {categories.map((cat) => (
+                            <SelectItem key={cat.slug} value={cat.slug}>
+                              {cat.name}
+                            </SelectItem>
+                          ))}
+                        </SelectContent>
+                      </Select>
+                    </div>
+                  </div>
+
+                  <div className="flex items-center justify-between">
+                    <div className="flex items-center space-x-2">
+                      <Switch
+                        id="article-lgbtq-focused"
+                        checked={newArticle.isLgbtqFocused}
+                        onCheckedChange={(checked) => setNewArticle({ ...newArticle, isLgbtqFocused: checked })}
+                        data-testid="switch-article-lgbtq-focused"
+                      />
+                      <Label htmlFor="article-lgbtq-focused">LGBTQ+ Focused Article</Label>
+                    </div>
+
+                    <Button 
+                      type="submit" 
+                      disabled={addArticleMutation.isPending || !newArticle.url}
+                      data-testid="button-add-article"
+                    >
+                      {addArticleMutation.isPending ? "Adding..." : "Add Article"}
+                    </Button>
+                  </div>
+                </form>
+              </CardContent>
+            </Card>
+
             <Card>
               <CardHeader>
                 <CardTitle>Recent Articles</CardTitle>
