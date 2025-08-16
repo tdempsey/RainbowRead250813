@@ -1,71 +1,60 @@
-import express, { type Request, Response, NextFunction } from "express";
-import { registerRoutes } from "./routes";
-import { setupVite, serveStatic, log } from "./vite";
+// server/index.ts
+import 'dotenv/config';
+import express from 'express';
+import cors from 'cors';
+import morgan from 'morgan';
 
+/** Read a CLI flag value like --port 9002 */
+const getArg = (flag: string) => {
+  const i = process.argv.indexOf(flag);
+  return i !== -1 && process.argv[i + 1] ? process.argv[i + 1] : undefined;
+};
+
+// ---- Prefer IPv4; avoid ::1 on Windows
+const PORT = Number(process.env.PORT ?? getArg('--port') ?? 9002);
+let HOST = (process.env.HOST ?? getArg('--host') ?? '127.0.0.1').trim();
+if (HOST === '::' || HOST === '::1' || HOST.toLowerCase() === 'localhost') {
+  HOST = '127.0.0.1';
+}
+
+// ---- Create app BEFORE listen
 const app = express();
+
+// ---- Middleware
+app.use(cors());
 app.use(express.json());
-app.use(express.urlencoded({ extended: false }));
+app.use(morgan('dev'));
 
-app.use((req, res, next) => {
-  const start = Date.now();
-  const path = req.path;
-  let capturedJsonResponse: Record<string, any> | undefined = undefined;
+// ---- Health check
+app.get('/health', (_req, res) => res.json({ ok: true, host: HOST, port: PORT }));
 
-  const originalResJson = res.json;
-  res.json = function (bodyJson, ...args) {
-    capturedJsonResponse = bodyJson;
-    return originalResJson.apply(res, [bodyJson, ...args]);
-  };
+// ---- TODO: add your routes here
+// import router from './routes';
+// app.use('/api', router);
 
-  res.on("finish", () => {
-    const duration = Date.now() - start;
-    if (path.startsWith("/api")) {
-      let logLine = `${req.method} ${path} ${res.statusCode} in ${duration}ms`;
-      if (capturedJsonResponse) {
-        logLine += ` :: ${JSON.stringify(capturedJsonResponse)}`;
-      }
+// ---- If you have bootstrap/dummy data loaders, call them AFTER app exists
+// await import('./bootstrap'); // or await loadDummyData();
 
-      if (logLine.length > 80) {
-        logLine = logLine.slice(0, 79) + "…";
-      }
-
-      log(logLine);
-    }
-  });
-
-  next();
+// ---- Start server AFTER everything above
+const server = app.listen(PORT, HOST, () => {
+  console.log(`Server listening on http://${HOST}:${PORT}`);
 });
 
-(async () => {
-  const server = await registerRoutes(app);
+// ---- Optional: start background jobs AFTER server is up
+// import('./scheduler').then(m => m.start?.(server)).catch(err => console.error('Scheduler start failed:', err));
 
-  app.use((err: any, _req: Request, res: Response, _next: NextFunction) => {
-    const status = err.status || err.statusCode || 500;
-    const message = err.message || "Internal Server Error";
-
-    res.status(status).json({ message });
-    throw err;
-  });
-
-  // importantly only setup vite in development and after
-  // setting up all the other routes so the catch-all route
-  // doesn't interfere with the other routes
-  if (app.get("env") === "development") {
-    await setupVite(app, server);
+// ---- Error handling
+server.on('error', (err: NodeJS.ErrnoException) => {
+  if (err.code === 'EADDRINUSE') {
+    console.error(`Port ${PORT} in use. Set PORT to a free port.`);
+  } else if (err.code === 'ENOTSUP') {
+    console.error(`Binding to ${HOST} not supported. Try HOST=127.0.0.1 or HOST=0.0.0.0.`);
   } else {
-    serveStatic(app);
+    console.error(err);
   }
+  process.exit(1);
+});
 
-  // ALWAYS serve the app on the port specified in the environment variable PORT
-  // Other ports are firewalled. Default to 5000 if not specified.
-  // this serves both the API and the client.
-  // It is the only port that is not firewalled.
-  const port = parseInt(process.env.PORT || '5000', 10);
-  server.listen({
-    port,
-    host: "localhost",
-    reusePort: true,
-  }, () => {
-    log(`serving on port ${port}`);
-  });
-})();
+// ---- Graceful shutdown
+process.on('SIGINT', () => server.close(() => process.exit(0)));
+process.on('SIGTERM', () => server.close(() => process.exit(0)));
